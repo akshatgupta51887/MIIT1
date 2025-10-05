@@ -1,0 +1,171 @@
+<%- include('../partials/header') %>
+
+<div class="container my-4">
+  <h3 class="mb-3 text-center">MIIT Gallery</h3>
+
+  <div class="d-flex justify-content-center mb-3">
+    <div class="input-group" style="max-width:560px;">
+      <select id="perPageSelect" class="form-select" style="max-width:150px;">
+        <option value="12" selected>12 per page</option>
+        <option value="24">24 per page</option>
+        <option value="36">36 per page</option>
+      </select>
+      <button id="refreshBtn" class="btn btn-outline-secondary">Refresh</button>
+    </div>
+  </div>
+
+  <!-- Gallery grid -->
+  <div id="galleryGrid" class="row g-3">
+    <!-- JS will populate rows/cols here -->
+  </div>
+
+  <!-- Pagination controls -->
+  <nav aria-label="Gallery pagination" class="mt-4">
+    <ul class="pagination justify-content-center" id="pager">
+    </ul>
+  </nav>
+</div>
+
+<%- include('../partials/footer') %>
+
+<script src="/assets/vendor/jquery/jquery-3.6.0.min.js"></script>
+<script>
+  (function () {
+    const galleryEl = document.getElementById('galleryGrid');
+    const pagerEl = document.getElementById('pager');
+    const perPageSelect = document.getElementById('perPageSelect');
+    const refreshBtn = document.getElementById('refreshBtn');
+
+    let state = {
+      page: 1,
+      perPage: parseInt(perPageSelect.value, 10) || 12,
+      total: 0,
+      pages: 1
+    };
+
+    function escapeHtml(s){
+      if (s === null || s === undefined) return '';
+      return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    function renderGrid(images) {
+      // images is array of image URLs (relative)
+      galleryEl.innerHTML = '';
+
+      // We want 3 columns per row => col-md-4, up to 4 rows (perPage default 12)
+      images.forEach((imgUrl, idx) => {
+        const col = document.createElement('div');
+        col.className = 'col-12 col-sm-6 col-md-4';
+        col.innerHTML = `
+          <div class="card h-100 border-0 shadow-sm">
+            <div class="ratio ratio-4x3">
+              <img src="${escapeHtml(imgUrl)}" class="card-img-top object-fit-cover" alt="MIIT Gallery Image ${idx+1}" loading="lazy" style="width:100%;height:100%;object-fit:cover;">
+            </div>
+            <div class="card-body py-2 px-2">
+              <small class="text-muted">Image ${escapeHtml(String((state.page - 1) * state.perPage + idx + 1))}</small>
+            </div>
+          </div>
+        `;
+        galleryEl.appendChild(col);
+      });
+
+      // If fewer than perPage images, fill with empty cols to keep layout stable (optional)
+      const missing = state.perPage - images.length;
+      for (let i = 0; i < missing; i++) {
+        const col = document.createElement('div');
+        col.className = 'col-12 col-sm-6 col-md-4';
+        col.innerHTML = `<div class="card h-100 border-0 bg-light"><div class="card-body d-flex align-items-center justify-content-center text-muted"> </div></div>`;
+        galleryEl.appendChild(col);
+      }
+    }
+
+    function renderPager() {
+      pagerEl.innerHTML = '';
+      const { page, pages } = state;
+
+      function addItem(label, disabled, active, onClick) {
+        const li = document.createElement('li');
+        li.className = 'page-item' + (disabled ? ' disabled' : '') + (active ? ' active' : '');
+        const a = document.createElement('a');
+        a.className = 'page-link';
+        a.href = '#';
+        a.innerText = label;
+        a.addEventListener('click', function (ev) {
+          ev.preventDefault();
+          if (!disabled && !active) onClick();
+        });
+        li.appendChild(a);
+        pagerEl.appendChild(li);
+      }
+
+      addItem('Previous', page <= 1, false, () => { state.page--; fetchAndRender(); });
+
+      // show a small window of pages (1..pages) with current highlighted
+      const WINDOW = 5;
+      let start = Math.max(1, page - Math.floor(WINDOW / 2));
+      let end = Math.min(pages, start + WINDOW - 1);
+      if (end - start + 1 < WINDOW) start = Math.max(1, end - WINDOW + 1);
+
+      if (start > 1) {
+        addItem('1', false, false, () => { state.page = 1; fetchAndRender(); });
+        if (start > 2) {
+          const gap = document.createElement('li'); gap.className = 'page-item disabled'; gap.innerHTML = '<span class="page-link">…</span>';
+          pagerEl.appendChild(gap);
+        }
+      }
+
+      for (let p = start; p <= end; p++) {
+        addItem(String(p), false, p === page, () => { state.page = p; fetchAndRender(); });
+      }
+
+      if (end < pages) {
+        if (end < pages - 1) {
+          const gap = document.createElement('li'); gap.className = 'page-item disabled'; gap.innerHTML = '<span class="page-link">…</span>';
+          pagerEl.appendChild(gap);
+        }
+        addItem(String(pages), false, false, () => { state.page = pages; fetchAndRender(); });
+      }
+
+      addItem('Next', page >= pages, false, () => { state.page++; fetchAndRender(); });
+    }
+
+    async function fetchAndRender() {
+      try {
+        // show temporary loader
+        galleryEl.innerHTML = `<div class="col-12 text-center py-5"><div class="spinner-border text-primary" role="status"></div><div class="mt-2">Loading...</div></div>`;
+        pagerEl.innerHTML = '';
+
+        const resp = await fetch(`/api/gallery?page=${state.page}&perPage=${state.perPage}`, { headers: { Accept: 'application/json' } });
+        if (!resp.ok) throw new Error('Network error');
+
+        const data = await resp.json();
+        if (!data || !data.ok) throw new Error(data && data.error ? data.error : 'Invalid response');
+
+        state.total = data.total || 0;
+        state.pages = data.pages || 1;
+        state.perPage = data.perPage || state.perPage;
+        state.page = data.page || state.page;
+
+        renderGrid(data.images || []);
+        renderPager();
+      } catch (err) {
+        console.error('Gallery fetch error', err);
+        galleryEl.innerHTML = `<div class="col-12 text-center text-danger py-4">Failed to load gallery.</div>`;
+      }
+    }
+
+    // event handlers
+    perPageSelect.addEventListener('change', () => {
+      state.perPage = parseInt(perPageSelect.value, 10) || 12;
+      state.page = 1;
+      fetchAndRender();
+    });
+    refreshBtn.addEventListener('click', () => {
+      // optional: force reload server cache by hitting a special endpoint, but for now just re-fetch
+      fetchAndRender();
+    });
+
+    // initial load
+    fetchAndRender();
+  })();
+</script>

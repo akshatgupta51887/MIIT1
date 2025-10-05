@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Issue Certificate - MIIT Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/super-admin-dashboard">
+                <i class="bi bi-speedometer2"></i> MIIT Super Admin
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> Admin
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/super-admin-logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-none d-md-block bg-white sidebar border-end">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin-dashboard">
+                                <i class="bi bi-house"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/centers">
+                                <i class="bi bi-building"></i> Centers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/students">
+                                <i class="bi bi-people"></i> Students
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/callbacks">
+                                <i class="bi bi-telephone"></i> Callback Requests
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/super-admin/certificates">
+                                <i class="bi bi-award"></i> Certificates
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/contact-queries">
+                                <i class="bi bi-envelope"></i> Contact Queries
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Issue New Certificate</h1>
+                    <a href="/super-admin/certificates" class="btn btn-secondary">
+                        <i class="bi bi-arrow-left"></i> Back to Certificates
+                    </a>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="card shadow">
+                            <div class="card-header">
+                                <h5 class="mb-0">Certificate Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="issueCertificateForm">
+                                    <div class="row">
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label">Select Student *</label>
+                                            <select class="form-select" id="studentSelect" name="studentId" required>
+                                                <option value="">Choose a student...</option>
+                                                <% (students || []).forEach(student => { %>
+                                                <option value="<%= student.studentId %>" 
+                                                        data-name="<%= student.student.name %>"
+                                                        data-email="<%= student.auth.email %>"
+                                                        data-course="<%= student.course.title %>"
+                                                        data-center="<%= student.center.inst %>">
+                                                    <%= student.student.name %> (<%= student.studentId %>) - <%= student.course.title %>
+                                                </option>
+                                                <% }) %>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Certificate Type *</label>
+                                            <select class="form-select" name="certificateType" required>
+                                                <option value="completion">Course Completion</option>
+                                                <option value="excellence">Excellence Award</option>
+                                                <option value="participation">Participation</option>
+                                                <option value="achievement">Special Achievement</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Grade *</label>
+                                            <select class="form-select" name="grade" required>
+                                                <option value="A+">A+ (Excellent)</option>
+                                                <option value="A">A (Very Good)</option>
+                                                <option value="B+">B+ (Good)</option>
+                                                <option value="B">B (Average)</option>
+                                                <option value="C+">C+ (Below Average)</option>
+                                                <option value="C">C (Pass)</option>
+                                                <option value="Pass" selected>Pass</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label">Valid Until (Optional)</label>
+                                            <input type="date" class="form-control" name="validUntil">
+                                            <small class="text-muted">Leave blank for lifetime validity</small>
+                                        </div>
+
+                                        <div class="col-md-12 mb-3">
+                                            <label class="form-label">Notes (Optional)</label>
+                                            <textarea class="form-control" name="notes" rows="3" placeholder="Additional notes or comments..."></textarea>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <button type="submit" class="btn btn-primary btn-lg">
+                                                <i class="bi bi-award"></i> Issue Certificate
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <div class="card">
+                            <div class="card-header">
+                                <h6 class="mb-0">Student Preview</h6>
+                            </div>
+                            <div class="card-body" id="studentPreview">
+                                <p class="text-muted">Select a student to see details</p>
+                            </div>
+                        </div>
+
+                        <div class="card mt-3">
+                            <div class="card-header">
+                                <h6 class="mb-0">Certificate Info</h6>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled mb-0">
+                                    <li><i class="bi bi-info-circle text-info"></i> Certificate ID will be auto-generated</li>
+                                    <li><i class="bi bi-shield-check text-success"></i> Verification code will be created</li>
+                                    <li><i class="bi bi-calendar text-warning"></i> Issue date will be set to today</li>
+                                    <li><i class="bi bi-award text-primary"></i> Certificate will be active immediately</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title">Certificate Issued Successfully!</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-3">
+                        <i class="bi bi-check-circle-fill text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    <div id="certificateDetails">
+                        <!-- Certificate details will be shown here -->
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="/super-admin/certificates" class="btn btn-primary">View All Certificates</a>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Issue Another</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Update student preview when selection changes
+        document.getElementById('studentSelect').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            const preview = document.getElementById('studentPreview');
+            
+            if (this.value) {
+                preview.innerHTML = `
+                    <h6>${selectedOption.dataset.name}</h6>
+                    <p class="mb-1"><strong>Student ID:</strong> ${this.value}</p>
+                    <p class="mb-1"><strong>Email:</strong> ${selectedOption.dataset.email}</p>
+                    <p class="mb-1"><strong>Course:</strong> ${selectedOption.dataset.course}</p>
+                    <p class="mb-0"><strong>Center:</strong> ${selectedOption.dataset.center}</p>
+                `;
+            } else {
+                preview.innerHTML = '<p class="text-muted">Select a student to see details</p>';
+            }
+        });
+
+        // Handle form submission
+        document.getElementById('issueCertificateForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
+            
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Issuing...';
+            
+            try {
+                const response = await fetch('/super-admin/certificates/issue', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.ok) {
+                    // Show success details
+                    document.getElementById('certificateDetails').innerHTML = `
+                        <table class="table table-bordered">
+                            <tr><th>Certificate ID:</th><td><strong>${result.certificateId}</strong></td></tr>
+                            <tr><th>Verification Code:</th><td><code>${result.verificationCode}</code></td></tr>
+                            <tr><th>Student:</th><td>${document.getElementById('studentSelect').options[document.getElementById('studentSelect').selectedIndex].dataset.name}</td></tr>
+                            <tr><th>Status:</th><td><span class="badge bg-success">Active</span></td></tr>
+                        </table>
+                    `;
+                    
+                    const modal = new bootstrap.Modal(document.getElementById('successModal'));
+                    modal.show();
+                    
+                    // Reset form
+                    this.reset();
+                    document.getElementById('studentPreview').innerHTML = '<p class="text-muted">Select a student to see details</p>';
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        });
+    </script>
+    
+    <style>
+        .sidebar { min-height: calc(100vh - 56px); }
+    </style>
+</body>
+</html>

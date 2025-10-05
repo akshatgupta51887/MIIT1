@@ -1,0 +1,165 @@
+<%- include('./partials/header') %>
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-<%= success ? 'success' : 'danger' %> text-white">
+                    <h4 class="mb-0">
+                        <i class="bi bi-<%= success ? 'check-circle' : 'x-circle' %>"></i>
+                        <%= type === 'center' ? 'Center' : 'Student' %> Verification Result
+                    </h4>
+                </div>
+                
+                <div class="card-body">
+                    <% if (success && data) { %>
+                        <!-- Success: Show verification details -->
+                        <div class="alert alert-success">
+                            <i class="bi bi-shield-check"></i>
+                            <strong>Verification Successful!</strong> 
+                            <% if (type === 'center') { %>
+                                This center is <%= data.verified ? 'verified and approved' : 'registered but pending approval' %> with MIIT.
+                            <% } else { %>
+                                This student is <%= data.verified ? 'enrolled and active' : 'registered but inactive' %> with MIIT.
+                            <% } %>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h5 class="text-primary mb-3">
+                                    <%= type === 'center' ? 'Center Details' : 'Student Details' %>
+                                </h5>
+                                
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <% if (type === 'center') { %>
+                                            <tr>
+                                                <th style="width: 30%;">Center Name</th>
+                                                <td><%= data.name %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Institute Name</th>
+                                                <td><%= data.institute || 'N/A' %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Email</th>
+                                                <td><%= data.email %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Phone</th>
+                                                <td><%= data.phone %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Location</th>
+                                                <td><%= data.location %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Status</th>
+                                                <td>
+                                                    <span class="badge bg-<%= data.status === 'approved' ? 'success' : data.status === 'pending' ? 'warning' : 'danger' %>">
+                                                        <%= data.status.toUpperCase() %>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Registered On</th>
+                                                <td><%= data.registeredOn %></td>
+                                            </tr>
+                                        <% } else { %>
+                                            <tr>
+                                                <th style="width: 30%;">Student ID</th>
+                                                <td><strong><%= data.studentId %></strong></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Student Name</th>
+                                                <td><%= data.name %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Email</th>
+                                                <td><%= data.email %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Phone</th>
+                                                <td><%= data.phone %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Center</th>
+                                                <td><%= data.center %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Center Location</th>
+                                                <td><%= data.centerLocation %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Course</th>
+                                                <td><%= data.course %> (<%= data.courseType %>)</td>
+                                            </tr>
+                                            <tr>
+                                                <th>Course Duration</th>
+                                                <td><%= data.courseDuration %></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Status</th>
+                                                <td>
+                                                    <span class="badge bg-<%= data.status === 'active' ? 'success' : data.status === 'inactive' ? 'warning' : 'danger' %>">
+                                                        <%= data.status.toUpperCase() %>
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th>Enrolled On</th>
+                                                <td><%= data.enrolledOn %></td>
+                                            </tr>
+                                        <% } %>
+                                    </table>
+                                </div>
+
+                                <% if (data.verified) { %>
+                                    <div class="alert alert-info mt-3">
+                                        <i class="bi bi-info-circle"></i>
+                                        <strong>Official Verification:</strong> 
+                                        This <%= type %> has been officially verified by MIIT and is authorized to operate/study under our certification program.
+                                    </div>
+                                <% } else { %>
+                                    <div class="alert alert-warning mt-3">
+                                        <i class="bi bi-exclamation-triangle"></i>
+                                        <strong>Pending Verification:</strong> 
+                                        This <%= type %> is registered but verification is still pending. Please contact MIIT support for more information.
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    <% } else { %>
+                        <!-- Error: Show error message -->
+                        <div class="alert alert-danger">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            <strong>Verification Failed!</strong> <%= error %>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <p class="text-muted">Please check your input and try again, or contact MIIT support if you believe this is an error.</p>
+                        </div>
+                    <% } %>
+
+                    <div class="text-center mt-4">
+                        <a href="/" class="btn btn-primary me-2">
+                            <i class="bi bi-house"></i> Back to Home
+                        </a>
+                        <button onclick="window.history.back()" class="btn btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Try Again
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card-footer text-muted text-center">
+                    <small>
+                        <i class="bi bi-shield-check"></i>
+                        Official verification by MIIT Skill Development Pvt Ltd
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('./partials/footer') %>

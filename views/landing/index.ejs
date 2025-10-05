@@ -1,0 +1,865 @@
+<%- include('../partials/header') %>
+
+
+    <div class="text-center">
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <small> <strong>Notice : </strong>Please be advised that <b>miit.in</b> is our only official website. We are
+                not affiliated with any other websites or domains. Any other site claiming to represent us is
+                unauthorized and should not be trusted.</small>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    </div>
+
+    <!-- Main landing page image -->
+    <div class="container-fluid home-tile border-bottom border-warning border-4">
+        <div class="row">
+            <div class="col-12 position-relative py-5 px-2 overflow-hidden">
+                <div id="landing-image-container">
+                    <img  data-src="/images/images/home-img.png"
+                        alt="MIIT Minimum Cost Franchise">
+                </div>
+
+                <div class="row">
+                    <div class="col-md-5 offset-md-1 px-5" style="z-index:1">
+                        <span class="h1 text-secondary">Welcome to <span class="text-primary">MIIT</span></span>
+
+                        <div class="card border-0 shadow-sm bg-white bg-opacity-75 mb-1 ms-3">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <span class="h6 m-0 me-2 text-primary"><i class="fa fa-star notop"></i></span>
+                                    <div class="vr border border-warning border-2 opacity-75 me-2"></div>
+                                    <h6 class="card-title m-0">Recognized by MCA.</h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm bg-white bg-opacity-75 mb-1 ms-3">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <span class="h6  m-0 me-2 text-primary"><i class="fa fa-star notop"></i></span>
+                                    <div class="vr border border-warning border-2 opacity-75 me-2"></div>
+                                    <h6 class="card-title m-0">Government job valid certificate.</h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm bg-white bg-opacity-75 mb-1 ms-3">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <span class="h6  m-0 me-2 text-primary"><i class="fa fa-star notop"></i></span>
+                                    <div class="vr border border-warning border-2 opacity-75 me-2"></div>
+                                    <h6 class="card-title m-0">An ISO 9001:2015 Government Certified Company.</h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm bg-white bg-opacity-75 mb-1 ms-3">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <span class="h6  m-0 me-2 text-primary"><i class="fa fa-star notop"></i></span>
+                                    <div class="vr border border-warning border-2 opacity-75 me-2"></div>
+                                    <h6 class="card-title m-0">Registered by Ministry of Corporate Affairs.</h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card border-0 shadow-sm bg-white bg-opacity-75 mb-1 ms-3">
+                            <div class="card-body">
+                                <div class="d-flex align-items-center">
+                                    <span class="h6 m-0 me-2 text-primary"><i class="fa fa-star notop"></i></span>
+                                    <div class="vr border border-warning border-2 opacity-75 me-2"></div>
+                                    <h6 class="card-title m-0">Authorization by Quality Research Organization.</h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        <br>
+                        <div class="text-center">
+                            <a href="/student-admission"
+                                class="shadow-lg btn btn-warning btn-lg rounded-5 fw-bold">FREE REGISTER <span
+                                    class="idvd">|</span> <i class="fa fa-rocket text-secondary"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <!-- All login links-->
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <div class="card bg-white shadow-sm border-0 rounded-0 w-100">
+                    <div class="card-body p-4">
+                        <a href="/center-login" class="btn btn-warning rounded-0 mb-1 w-100"><i
+                                class="fa fa-fingerprint"></i> <span class="idvd">|</span> <b>CENTER LOGIN</b></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card bg-white shadow-sm border-0 rounded-0 w-100">
+                    <div class="card-body p-4">
+                        <a href="/student-login" class="btn btn-primary rounded-0 mb-1 w-100"><i
+                                class="fa fa-fingerprint"></i> <span class="idvd">|</span> <b>STUDENT LOGIN</b></a>
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+    </div>
+
+    <br>
+    <!-- Verification, News & Stats Section-->
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-md-4 d-flex flex-column justify-content-between">
+                <div class="card bg-white shadow-sm border-0 rounded-0 w-100">
+                    <div class="card-body p-4">
+                        <form method="POST" action="/verify-certificate" id="certVerificationForm">
+                            <h6 class="nceb-heading-primary">CERTIFICATE VERIFICATION</h6>
+                            <div class="input-group">
+                                <input name="cert_no" type="text" class="form-control"
+                                    placeholder="Enter Certificate ID or Verification Code"
+                                    aria-label="Enter Certificate No."
+                                    aria-describedby="crv-button"
+                                    required
+                                    id="certInput">
+                                <button class="btn btn-primary" type="submit" id="crv-button">
+                                    <i class="bi bi-search"></i> VERIFY
+                                </button>
+                            </div>
+                            <small class="text-muted mt-2 d-block">
+                                <i class="bi bi-info-circle"></i> 
+                                Enter Certificate ID (e.g., CERT2025100001) or Verification Code
+                            </small>
+                        </form>
+                    </div>
+                </div>
+
+<!-- Center verification form (add required attribute) -->
+<div class="card bg-white shadow-sm border-0 rounded-0 w-100">
+    <div class="card-body p-4">
+        <form method="POST" action="/center-verification">
+            <h6 class="nceb-heading-primary">CENTER VERIFICATION</h6>
+            <div class="input-group">
+                <input name="center_id" type="text" class="form-control" placeholder="Enter Center ID"
+                    aria-label="Enter Center ID" aria-describedby="cv-button" required>
+                <button class="btn btn-primary" type="submit" id="cv-button">SUBMIT</button>
+            </div>
+            <small class="text-muted mt-2 d-block">Enter Center Name, Email, Phone, or ID</small>
+        </form>
+    </div>
+</div>
+
+<!-- Student verification form (add required attribute) -->
+<div class="card bg-white shadow-sm border-0 rounded-0 w-100">
+    <div class="card-body p-4">
+        <form method="POST" action="/student-verification">
+            <h6 class="nceb-heading-primary">STUDENT VERIFICATION</h6>
+            <div class="input-group">
+                <input name="student_id" type="text" class="form-control" placeholder="Enter Student ID"
+                    aria-label="Enter Student ID" aria-describedby="sv-button" required>
+                <button class="btn btn-primary" type="submit" id="sv-button">SUBMIT</button>
+            </div>
+            <small class="text-muted mt-2 d-block">Enter Student ID, Name, or Email</small>
+        </form>
+    </div>
+</div>
+
+            </div>
+
+            <div class="col-md-4 d-flex flex-fill">
+                <div class="card bg-white shadow-sm border-0 rounded-0 w-100 overflow-hidden" id="news-card">
+                    <div class="card-header bg-secondary text-white rounded-0 p-3">
+                        <h6 class="nceb-heading-warning m-0 p-0">Latest News</h6>
+                    </div>
+                    <div class="card-body">
+                        <ul id="news-container" class="list-unstyled overflow-hidden">
+                            <li>You can earn up to 40% by taking the distributorship of MIIT all the centers</li>
+                            <li>All of you centers should be relaxed, updates will keep coming from time to time,
+                                updates will also come in such a way that it is better for you.</li>
+                            <li>The central ID will be deactivated if the central panel is not logged in time to time.
+                            </li>
+                            <li>The final result of the top center list will come on the last date of the year.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 d-flex flex-fill" id="counter">
+                <div class="card bg-white shadow-sm border-0 rounded-0 w-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <div class="stat-icon py-2 px-3">
+                                <span class="display-3 m-0 p-0"><i class="fa-solid fa-school"></i></span>
+                            </div>
+                            <div class="stat-data text-center p-2">
+                                <h6 class="nceb-heading-primary">Our Centers</h6>
+                                <h2><span class="counter-value" data-target="1545" data-speed="300">0</span>+</h2>
+                            </div>
+                        </div>
+                        <hr class="opacity-25">
+                        <div class="d-flex justify-content-between">
+                            <div class="stat-icon py-2 px-3">
+                                <span class="display-3 m-0 p-0"><i class="fa-solid fa-user-graduate"></i></span>
+                            </div>
+                            <div class="stat-data text-center p-2">
+                                <h6 class="nceb-heading-primary">Happy Students</h6>
+                                <h2><span class="counter-value" data-target="9591" data-speed="800">0</span>+</h2>
+                            </div>
+                        </div>
+                        <hr class="opacity-25">
+                        <div class="d-flex justify-content-between">
+                            <div class="stat-icon py-2 px-3">
+                                <span class="display-3 m-0 p-0"><i class="fa-solid fa-users"></i></span>
+                            </div>
+                            <div class="stat-data text-center p-2">
+                                <h6 class="nceb-heading-primary">Visitor Count</h6>
+                                <h2><span class="counter-value" data-target="2931725" data-speed="900">0</span>+</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <!-- Join MIIT 3D Section -->
+    <div class="container-fluid grid3d-bg">
+        <div class="row">
+            <div class="col-12 text-center">
+                <br>
+                <br>
+                <span class="display-1 text-white text-3d"><b>JOIN MIIT IN SINGLE STEP</b></span>
+                <br>
+                <a href="/register-with-miit" class="btn btn-warning btn-lg w-50"><b>APPLY FOR FRANCHISE</b></a>
+                <br>
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <!-- Recently Joined Center Section -->
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="card bg-white border-0 rounded-0 w-100 h-100 p-3">
+                    <h4 class="nceb-heading-primary">Recently Joined Centers</h4>
+                    <hr class="w-25" style="height:10px;">
+
+                    <div class="glider-contain multiple">
+                        <div class="glider" id="recentCenters">
+
+                            <div class="p-2">
+                                <div class="card bg-white shadow-sm border-0 w-100">
+                                    <div class="card-header bg-secondary text-white text-center">
+                                        MIITc2503226
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="position-relative">
+                                            
+                                            <img  data-src="/images/center_images/34640CHP.jpeg"
+                                                class="center_head_img rounded-circle img-fluid w-100 border border-5 border-secondary"
+                                                alt="nceb center head image of MIITc2503226">
+                                        </div>
+                                        <div class="center_head_name"><b>MUKESH KUMAR</b></div>
+                                    </div>
+                                    <div class="card-footer bg-primary text-white text-center">
+                                        Maharashtra
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-2">
+                                <div class="card bg-white shadow-sm border-0 w-100">
+                                    <div class="card-header bg-secondary text-white text-center">
+                                        NCEBc2503221
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="position-relative">
+                    
+                                            <img  data-src="/images/center_images/2.jpeg"
+                                                class="center_head_img rounded-circle img-fluid w-100 border border-5 border-secondary"
+                                                alt="MIIT center head image of MIITc2503221">
+                                        </div>
+                                        <div class="center_head_name"><b>RAVI BATHLA</b></div>
+                                    </div>
+                                    <div class="card-footer bg-primary text-white text-center">
+                                        Haryana
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-2">
+                                <div class="card bg-white shadow-sm border-0 w-100">
+                                    <div class="card-header bg-secondary text-white text-center">
+                                        MIITc2503220
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="position-relative">
+
+                                            <img  data-src="/images/center_images/3.JPEG"
+                                                class="center_head_img rounded-circle img-fluid w-100 border border-5 border-secondary"
+                                                alt="MIIT center head image of MIITc2503220">
+                                        </div>
+                                        <div class="center_head_name"><b>MD SHAHZAD AFROZ ANSARI</b></div>
+                                    </div>
+                                    <div class="card-footer bg-primary text-white text-center">
+                                        Jharkhand
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-2">
+                                <div class="card bg-white shadow-sm border-0 w-100">
+                                    <div class="card-header bg-secondary text-white text-center">
+                                        MIITc2503219
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="position-relative">
+                                            <img  data-src="/images/center_images/4.JPEG"
+                                                class="center_head_img rounded-circle img-fluid w-100 border border-5 border-secondary"
+                                                alt="MIIT center head image of MIITc2503219">
+                                        </div>
+                                        <div class="center_head_name"><b>BILAL AHMAD</b></div>
+                                    </div>
+                                    <div class="card-footer bg-primary text-white text-center">
+                                        Uttar Pradesh
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-2">
+                                <div class="card bg-white shadow-sm border-0 w-100">
+                                    <div class="card-header bg-secondary text-white text-center">
+                                        MIITc2503218
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="position-relative">
+                                            
+                                            <img data-src="/images/center_images/5.JPEG"
+                                                class="center_head_img rounded-circle img-fluid w-100 border border-5 border-secondary"
+                                                alt="MIIT center head image of MIITc2503218">
+                                        </div>
+                                        <div class="center_head_name"><b>KAMLESH</b></div>
+                                    </div>
+                                    <div class="card-footer bg-primary text-white text-center">
+                                        Tamil Nadu
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-2">
+                                <div class="card bg-white shadow-sm border-0 w-100">
+                                    <div class="card-header bg-secondary text-white text-center">
+                                        MIITc2503217
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="position-relative">
+
+                                            <img data-src="/images/center_images/49216chp.jpeg"
+                                                class="center_head_img rounded-circle img-fluid w-100 border border-5 border-secondary"
+                                                alt="MIIT center head image of MIITc2503217">
+                                        </div>
+                                        <div class="center_head_name"><b>HIMANSHU</b></div>
+                                    </div>
+                                    <div class="card-footer bg-primary text-white text-center">
+                                        Haryana
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-2">
+                                <div class="card bg-white shadow-sm border-0 w-100">
+                                    <div class="card-header bg-secondary text-white text-center">
+                                        MIITc2503216
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="position-relative">
+                                            <img  data-src="/images/center_images/13303chp.jpeg"
+                                                class="center_head_img rounded-circle img-fluid w-100 border border-5 border-secondary"
+                                                alt="MIIT center head image of MIITc2503216">
+                                        </div>
+                                        <div class="center_head_name"><b>SUNIL NATH</b></div>
+                                    </div>
+                                    <div class="card-footer bg-primary text-white text-center">
+                                        Uttarakhand
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-2">
+                                <div class="card bg-white shadow-sm border-0 w-100">
+                                    <div class="card-header bg-secondary text-white text-center">
+                                        MIITc2503213
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="position-relative">
+                                            
+                                            <img  data-src="/images/center_images/21918chp.jpeg"
+                                                class="center_head_img rounded-circle img-fluid w-100 border border-5 border-secondary"
+                                                alt="MIIT center head image of MIITc2503213">
+                                        </div>
+                                        <div class="center_head_name"><b>ABHAY CHAURASIA</b></div>
+                                    </div>
+                                    <div class="card-footer bg-primary text-white text-center">
+                                        Odisha
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-2">
+                                <div class="card bg-white shadow-sm border-0 w-100">
+                                    <div class="card-header bg-secondary text-white text-center">
+                                        MIITc2503210
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="position-relative">
+                                            
+                                            <img  data-src="/images/center_images/82583chp.jpeg"
+                                                class="center_head_img rounded-circle img-fluid w-100 border border-5 border-secondary"
+                                                alt="MIIT center head image of MIITc2503210">
+                                        </div>
+                                        <div class="center_head_name"><b>MD FARHANUDDIN</b></div>
+                                    </div>
+                                    <div class="card-footer bg-primary text-white text-center">
+                                        Uttarakhand
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-2">
+                                <div class="card bg-white shadow-sm border-0 w-100">
+                                    <div class="card-header bg-secondary text-white text-center">
+                                        MIITc2503208
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="position-relative">
+                                            
+                                            <img  data-src="/images/center_images/31616chp.jpeg"
+                                                class="center_head_img rounded-circle img-fluid w-100 border border-5 border-secondary"
+                                                alt="MIIT center head image of MIITc2503208">
+                                        </div>
+                                        <div class="center_head_name"><b>S FARUQ</b></div>
+                                    </div>
+                                    <div class="card-footer bg-primary text-white text-center">
+                                        Himachal Pradesh
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-2">
+                                <div class="card bg-white shadow-sm border-0 w-100">
+                                    <div class="card-header bg-secondary text-white text-center">
+                                        MIITc2503206
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="position-relative">
+                                            
+                                            <img  data-src="/images/center_images/15967chp.jpeg"
+                                                class="center_head_img rounded-circle img-fluid w-100 border border-5 border-secondary"
+                                                alt="MIIT center head image of MIITc2503206">
+                                        </div>
+                                        <div class="center_head_name"><b>AMARJIT SINGH</b></div>
+                                    </div>
+                                    <div class="card-footer bg-primary text-white text-center">
+                                        Punjab
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="p-2">
+                                <div class="card bg-white shadow-sm border-0 w-100">
+                                    <div class="card-header bg-secondary text-white text-center">
+                                        MIITc2503204
+                                    </div>
+                                    <div class="card-body text-center">
+                                        <div class="position-relative">
+
+                                            <img  data-src="/images/center_images/1.jpeg"
+                                                class="center_head_img rounded-circle img-fluid w-100 border border-5 border-secondary"
+                                                alt="MIIT center head image of MIITc2503204">
+                                        </div>
+                                        <div class="center_head_name"><b>MOHD MAQBOOL</b></div>
+                                    </div>
+                                    <div class="card-footer bg-primary text-white text-center">
+                                        Jammu and Kashmir
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <!-- Free Test Section -->
+    <div class="container-fluid bg-warning text-black">
+        <div class="row">
+            <div class="col-12">
+                <br>
+                <br>
+                <div class="d-flex justify-content-center">
+                    <div class="me-5 align-self-center">
+                        <img src="/images/test.svg" alt="MIIT free test preparation">
+                    </div>
+
+                    <div class="div">
+                        <span class="h1"><b>FREE TEST PREPARATION</b></span><br>
+                        <a href="/miit-free-test" class="btn btn-light btn-lg rounded-0"><b>TAKE FREE TEST <span
+                                    class="idvd"></span> </b></a>
+                    </div>
+
+                </div>
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <!-- About & Testimonials -->
+    <div class="container">
+        <div class="row g-3">
+            <div class="col-md-7 d-flex flex-fill">
+                <div class="card bg-white shadow-sm border-0 rounded-0 w-100">
+                    <div class="card-body">
+                        <div class="row g-0">
+                            <div class="col-md-4 align-self-center">
+                                <h4 class="nceb-heading-primary">About MIIT</h4>
+                                <hr class="w-50">
+                                <div class="p-2">
+                                    <img class="card-3d img-fluid" alt="MIIT logo" title="MIIT final Logo"
+                                        src="/images/favicon/main-logo.png">
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <p class="text-justify">Mounten Innovative Information Technologies successfully running
+                                    many
+                                    centres all over India which focuses on success of the candidate with the updated
+                                    Technology and fertility in India and therefore Mounten Innovative Information
+                                    Technologies is
+                                    successfully running many centres all over India and its franchises. Mounten
+                                    Innovative Information Technologies build teaching environment that response to
+                                    future
+                                    challenges to provide quality education in both theoretical and applied courses of
+                                    computer education and to train students to effective apply research based
+                                    education. Mounten Innovative Information Technologies is staying one step ahead in
+                                    providing
+                                    the latest information in technology education make the institutions student
+                                    friendly and deliver services to the society the mission of providing best quality.
+                                </p>
+                                <a href="about-miit.html" class="btn btn-secondary">Read more...</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5 bg-white particles-bg">
+                <div class="p-2 bg-white">
+                    <h4 class="m-0 p-0 nceb-heading-primary">Testimonials</h4>
+                </div>
+                <hr>
+
+                <div class="glider-contain">
+                    <div class="glider" id="testimonials">
+
+                        <div class="p-2">
+                            <div class="d-flex justify-content-center">
+                                <div class="card bg-white shadow-lg border-0 w-75">
+                                    <div class="card-body text-center">
+                                        <img  data-src="/images/center_images/6.jpeg"
+                                            class="rounded-circle img-fluid w-50 d-inline" width="50px"
+                                            alt="MIIT centerhead testomonial 1"><br>
+                                        <small>MIIT provides computer education franchise absolutely free and it has
+                                            good moto
+                                            of computer skill development in India .MIIT has best customer support with
+                                            fastest
+                                            response.I can proudly say I am Part of MIIT.</small>
+                                    </div>
+                                    <div class="card-footer bg-secondary text-white text-center">
+                                        <small>STAR COMPUTER (MIITc190282)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-2">
+                            <div class="d-flex justify-content-center">
+                                <div class="card bg-white shadow-lg border-0 w-75">
+                                    <div class="card-body text-center">
+                                        <img  data-src="/images/center_images/7.jpeg"
+                                            class="rounded-circle img-fluid w-50 d-inline" width="50px"
+                                            alt="MIIT centerhead testomonial 2"><br>
+                                        <small>MIIT has the best user interface, easy examination process, attractive
+                                            certificate design and one of the best customer support team.</small>
+                                    </div>
+                                    <div class="card-footer bg-secondary text-white text-center">
+                                        <small>INFOTECH OF COMPUTER SCIENCE (MIITc2001347)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-2">
+                            <div class="d-flex justify-content-center">
+                                <div class="card bg-white shadow-lg border-0 w-75">
+                                    <div class="card-body text-center">
+                                        <img src=""
+                                            data-src="/images/center_images/31616CHP.JPEG"
+                                            class="rounded-circle img-fluid w-50 d-inline" width="50px"
+                                            alt="MIIT centerhead testomonial 3"><br>
+                                        <small>MIIT is one of the best Computer Education Franchise.After getting
+                                            associated with MIIT Franchise our organization has got a brand recognition
+                                            I would like them to keep supporting us like this.</small>
+                                    </div>
+                                    <div class="card-footer bg-secondary text-white text-center">
+                                        <small>MIIT GHATSILA (MIITc190156)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-2">
+                            <div class="d-flex justify-content-center">
+                                <div class="card bg-white shadow border-0 w-75">
+                                    <div class="card-body text-center">
+                                        <img data-src="/images/center_images/8.jpeg"
+                                            class="rounded-circle img-fluid w-50 d-inline" width="50px"
+                                            alt="MIIT centerhead testomonial 4"><br>
+                                        <small>MIIT has the fast technical and customer support, easy to use dashboard
+                                            and fast and on time certificate generation .</small>
+                                    </div>
+                                    <div class="card-footer bg-secondary text-white text-center">
+                                        <small>SSG GROUP OF EDUCATION (MIITc2001373)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-2">
+                            <div class="d-flex justify-content-center">
+                                <div class="card bg-white shadow border-0 w-75">
+                                    <div class="card-body text-center">
+                                        <img  data-src="/images/center_images/9.jpg"
+                                            class="rounded-circle img-fluid w-50 d-inline" width="50px"
+                                            alt="MIIT centerhead testomonial 5"><br>
+                                        <small>MIIT is the best organisation to provide computer franchise also has
+                                            online verification for center, student and certificate. Best part about
+                                            MIIT is customer support & easy dashboard.</small>
+                                    </div>
+                                    <div class="card-footer bg-secondary text-white text-center">
+                                        <small>INFINITY COMPUTER EDUCATION CENTER (MIITc190428)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="p-2">
+                            <div class="d-flex justify-content-center">
+                                <div class="card bg-white shadow border-0 w-75">
+                                    <div class="card-body text-center">
+                                        <img data-src="/images/center_images/10.jpeg"
+                                            class="rounded-circle img-fluid w-50 d-inline" width="50px"
+                                            alt="MIIT centerhead testomonial 6"><br>
+                                        <small>The feature i love about MIIT is Practice test where students can prepare
+                                            themselves, easy to conduct examination and professional customer
+                                            support.</small>
+                                    </div>
+                                    <div class="card-footer bg-secondary text-white text-center">
+                                        <small>JUPITER COMPUTER WORLD (MIITc2202696)</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <!-- Distrubuter Section -->
+    <div class="container-fluid bg-primary text-white">
+        <div class="row">
+            <div class="col-12">
+                <br>
+                <br>
+                <div class="d-flex justify-content-center">
+                    <div class="me-5 align-self-center">
+                        <img src="/images/income.png" widtg="100px" alt="MIIT Distributer program">
+                    </div>
+
+                    <div class="div">
+                        <span class="h1"><b>JOIN OUR DISTRIBUTOR PROGRAM</b></span><br>
+                        <button class="btn btn-warning btn-lg rounded-0 d-none d-lg-block"><b>EARN UPTO 40% OF CENTER'S
+                                BUSINESS</b></button>
+
+                        <button class="btn btn-warning btn-sm rounded-0 d-block d-lg-none"><b>EARN UPTO
+                                40% OF CENTER'S
+                                BUSINESS</b></button>
+                        <h4 class="mt-2"><b>Call : <a class="text-decoration-none text-white"
+                                    href="tel:+918897738181">8897738181</a></b></h4>
+                    </div>
+
+                </div>
+                <br>
+                <br>
+            </div>
+        </div>
+    </div>
+    <br>
+    <br>
+
+    <!-- Salient Features Section -->
+    <div class="container bg-white shadow-sm">
+        <div class="row g-4">
+            <div class="col-12">
+                <h4 class="nceb-heading-primary">Salient Features of <span class="text-primary">MIIT</span></h4>
+                <hr>
+            </div>
+            <div class="col-12 col-md-3 offset-md-1">
+                <ul class="list-group list-group-flush mt-md-3 wow slideInLeft text-dark text-center"
+                    style="visibility: visible; animation-name: slideInLeft;">
+                    <li class="list-group-item">Recognized By MCA.</li>
+                    <li class="list-group-item">Regd. By Ministry Of Corporate Affairs.</li>
+                    <li class="list-group-item">Registered By Public Trust.</li>
+                    <li class="list-group-item">Authorization By Quality Research Organization.</li>
+                    <li class="list-group-item">Regd with niti Aayog.</li>
+                    <li class="list-group-item">An Registered by Government of India 9001:2015 Certified MIIT Computer
+                        Education Board.</li>
+                    <li class="list-group-item">Online Certificate Verification .</li>
+
+                </ul>
+
+            </div>
+            <div class="col-12 col-md-4 text-center">
+                <img class="w-80" alt="MIIT Features" title="MIIT Features" src="assets/images/nceb-pre.svg"
+                    data-src="/images/TreeFeat.png">
+                <br>
+            </div>
+            <div class="col-12 col-md-3">
+                <ul class="list-group list-group-flush mt-md-3 text-dark text-center"
+                    style="visibility: visible; animation-name: slideInRight;">
+                    <li class="list-group-item">Minimum Cost Franchise.</li>
+                    <li class="list-group-item">No Renewal Fee.</li>
+                    <li class="list-group-item">No Other Investment.</li>
+                    <li class="list-group-item">Govt. Project Will be Delivered Form Institute Time to Time.</li>
+                    <li class="list-group-item">Online Center Verification.</li>
+                    <li class="list-group-item">Online Student Verification.</li>
+                    <li class="list-group-item">Valid Certificate in Govt. In Private Firms &amp; Company's.</li>
+                </ul>
+            </div>
+            <br>
+        </div>
+
+    </div>
+    <br>
+
+    <!-- MIIT WORD CLOUD -->
+    <div class="container-fluid gayab">
+        <div class="row">
+            <div class="col-12 text-justify word-cloud">
+                <!--<span class="display-3">MIIT Word Cloud</span><br/>
+                <hr class="bbpx4">-->
+                <p class="h6 text-danger">minimum cost computer institute franchise all over India Computer Institute Franchise
+                    Absolutely Free</p>
+                <p class="h2 text-primary">minimum cost computer education franchise</p>
+                <span class="h1 text-success">Take franchise absolutely minimum cost from MIIT</span>
+                <span class="h1 text-info">computer course franchise</span>
+                <p class="h5 text-secondry">computer education franchise</p>
+                <p class="h4 text-warning">computer education franchise in india</p>
+                <p class="h5 text-primary">minimum cost computer institute franchise</p>
+                <span class="h2 text-info">minimum cost computer franchise</span>
+                <span class="h1 text-danger">franchising</span>
+                <span class="h4 text-primary">computer center franchise</span>
+                <span class="h1 text-warning">minimum cost computer education franchise</span>
+                <span class="h3 text-info">computer institute franchise absolutely free</span>
+                <span class="h6 text-danger">franchising</span>
+                <span class="h1 text-secondry">computer center franchise</span>
+                <span class="h1 text-warning">franchise opportunity in India</span>
+                <span class="h2 text-primary">the best franchise in India</span>
+                <span class="h1 text-info">Top franchise in India</span>
+                <span class="h6 text-danger">open computer centre</span>
+                <span class="h3 text-primary">best computer education franchise</span>
+                <span class="h6 text-success">Computer course franchise</span>
+                <span class="h1 text-info">computer training franchise</span>
+                <span class="h3 text-primary">govt.computer education franchise</span>
+                <span class="h4 text-danger">govt project for computer education</span>
+                <span class="h1 text-primary">minimum cost government computer courses franchise</span>
+                <span class="h6 text-warning">computer institute franchise absolutely free</span>
+                <span class="h3 text-info">computer training institute franchise</span>
+                <span class="h4 text-success">computer center franchise in india</span>
+                <span class="h1 text-primary">MIIT</span>
+                <span class="h2 text-warning">skill development franchise</span>
+                <span class="h4 text-danger">best computer franchise</span>
+                <span class="h5 text-info">success computer education skill development</span>
+                <span class="h2 text-danger">franchise opportunities in computer education</span>
+                <span class="h3 text-success">computer institute franchise</span>
+                <span class="h4 text-success">computer franchise</span>
+                <span class="h5 text-success">computer minimum cost franchise</span>
+                <span class="h5 text-success">govt project franchise</span>
+                <span class="h5 text-success">minimum cost govt project franchise</span>
+                <span class="h5 text-success">government project franchise</span>
+                <span class="h5 text-success">minimum cost government project franchise</span>
+                <p>MIIT absolutely minimum cost franchise in india
+                    minimum cost best computer center franchise in uttarakhand
+                    minimum cost best computer center franchise in up
+                    minimum cost best computer center franchise in bihar
+                    minimum cost best computer center franchise in karnataka
+                    minimum cost best computer center franchise in telangana
+                    minimum cost best computer center franchise in tamil nadu
+                    minimum cost best computer center franchise in West Bengal
+                    minimum cost best computer center franchise in Jammu and Kashmir
+                    minimum cost best computer center franchise in Odisha</p>
+            </div>
+        </div>
+    </div>
+
+    
+
+<%- include('../partials/footer') %>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('certVerificationForm');
+        const input = document.getElementById('certInput');
+        const button = document.getElementById('crv-button');
+        
+        form.addEventListener('submit', function(e) {
+            if (!input.value.trim()) {
+                e.preventDefault();
+                alert('Please enter a certificate number or verification code');
+                return false;
+            }
+            
+            // Show loading state
+            const originalText = button.innerHTML;
+            button.disabled = true;
+            button.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Verifying...';
+            
+            // Re-enable after a delay (form will submit)
+            setTimeout(() => {
+                button.disabled = false;
+                button.innerHTML = originalText;
+            }, 2000);
+        });
+        
+        // Auto-uppercase input
+        input.addEventListener('input', function() {
+            this.value = this.value.toUpperCase();
+        });
+    });
+    </script>

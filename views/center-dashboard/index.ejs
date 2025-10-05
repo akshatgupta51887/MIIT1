@@ -1,0 +1,68 @@
+<%- include('../partials/header') %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-10 offset-md-1">
+      <div class="card shadow">
+        <div class="card-header bg-warning text-dark d-flex justify-content-between">
+          <div>Center Dashboard</div>
+          <div><a class="btn btn-dark btn-sm" href="/center-logout">Logout</a></div>
+        </div>
+        <div class="card-body">
+          <h5 class="mb-3">Welcome, <%= center.inst || center.fullname %></h5>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td class="fw-bold">Center Name</td>
+                  <td><%= center.inst || center.fullname %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Email</td>
+                  <td><%= center.email %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Phone</td>
+                  <td><%= center.phone %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Address</td>
+                  <td><%= center.cenAdr %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">State</td>
+                  <td><%= center.state %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">District</td>
+                  <td><%= center.district %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">City</td>
+                  <td><%= center.city %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Pincode</td>
+                  <td><%= center.pincode %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Status</td>
+                  <td><span class="badge bg-success"><%= center.status %></span></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Registered On</td>
+                  <td><%= new Date(center.createdAt).toLocaleString() %></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-3">
+            <a class="btn btn-primary" href="https://www.nceb.in/dashboard/">Main Dashboard</a>
+            <a class="btn btn-secondary" href="/">Home</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

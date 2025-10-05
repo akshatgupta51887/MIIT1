@@ -1,0 +1,536 @@
+<%- include('../partials/header') %>
+
+<div class="container mt-2">
+  <div class="row g-1">
+    <div class="col-md-8 offset-md-2">
+      <div class="card shadow border-0 bg-white">
+        <div class="card-header bg-primary border-bottom border-warning border-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <div><h4 class="text-white m-0">Online Admission Form</h4></div>
+            <div></div>
+          </div>
+        </div>
+        <div class="card-body">
+          <form id="registrationForm">
+            <div class="row">
+
+              <div class="col-md-6 mb-3">
+                <label for="state" class="form-label">Center State</label>
+                <select class="form-select" id="state" name="state" required>
+                  <option value="">Select Center State</option>
+                  <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                  <option value="Andhra Pradesh">Andhra Pradesh</option>
+                  <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                  <option value="Assam">Assam</option>
+                  <option value="Bihar">Bihar</option>
+                  <option value="Chandigarh">Chandigarh</option>
+                  <option value="Chhattisgarh">Chhattisgarh</option>
+                  <option value="Dadra and Nagar Haveli and Daman & Diu">Dadra and Nagar Haveli and Daman & Diu</option>
+                  <option value="Delhi">Delhi</option>
+                  <option value="Goa">Goa</option>
+                  <option value="Gujarat">Gujarat</option>
+                  <option value="Haryana">Haryana</option>
+                  <option value="Himachal Pradesh">Himachal Pradesh</option>
+                  <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                  <option value="Jharkhand">Jharkhand</option>
+                  <option value="Karnataka">Karnataka</option>
+                  <option value="Kerala">Kerala</option>
+                  <option value="Ladakh">Ladakh</option>
+                  <option value="Lakshadweep">Lakshadweep</option>
+                  <option value="Madhya Pradesh">Madhya Pradesh</option>
+                  <option value="Maharashtra">Maharashtra</option>
+                  <option value="Manipur">Manipur</option>
+                  <option value="Meghalaya">Meghalaya</option>
+                  <option value="Mizoram">Mizoram</option>
+                  <option value="Nagaland">Nagaland</option>
+                  <option value="Odisha">Odisha</option>
+                  <option value="Puducherry">Puducherry</option>
+                  <option value="Punjab">Punjab</option>
+                  <option value="Rajasthan">Rajasthan</option>
+                  <option value="Sikkim">Sikkim</option>
+                  <option value="Tamil Nadu">Tamil Nadu</option>
+                  <option value="Telangana">Telangana</option>
+                  <option value="Tripura">Tripura</option>
+                  <option value="Uttarakhand">Uttarakhand</option>
+                  <option value="Uttar Pradesh">Uttar Pradesh</option>
+                  <option value="West Bengal">West Bengal</option>
+                </select>
+                <small class="text-danger" id="stateErr">&nbsp;</small>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="center_id" class="form-label">Select Center</label>
+                <select class="form-select" id="center_id" name="center_id" required disabled>
+                  <option value="">Select Center</option>
+                </select>
+                <small class="text-danger" id="center_idErr">&nbsp;</small>
+              </div>
+
+              <div class="col-md-12 mb-3">
+                <label for="course_id" class="form-label">Select Course</label>
+                <select class="form-select" id="course_id" name="course_id" required disabled>
+                  <option value="">Select Course</option>
+                </select>
+                <small class="text-danger" id="course_idErr">&nbsp;</small>
+              </div>
+
+              <div class="col-md-12 mb-3 d-none" id="courseContainer">
+                <h6>Course Details</h6>
+                <div class="table-responsive">
+                  <table class="table table-bordered align-middle w-100">
+                    <thead>
+                      <tr class="text-center">
+                        <th class="bg-primary text-white" scope="col">Course Type</th>
+                        <th class="bg-primary text-white" scope="col">Course Duration</th>
+                        <th class="bg-primary text-white" scope="col">Course Subjects</th>
+                        <th class="bg-primary text-white" scope="col">Semesters Count</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td id="ct" class="text-center">-</td>
+                        <td id="cd" class="text-center">-</td>
+                        <td id="csub">-</td>
+                        <td id="csem" class="text-center">-</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div class="col-md-12 mb-3">
+                <hr>
+                <h4 class="nceb-heading-primary">Student Details</h4>
+                <hr>
+              </div>
+
+              <div class="col-md-5 mb-3">
+                <label for="student_name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="student_name" name="student_name" required>
+                <small class="text-danger" id="student_nameErr">&nbsp;</small>
+              </div>
+
+              <div class="col-md-2 mb-3">
+                <label for="s_rel" class="form-label">Select Relation</label>
+                <select class="form-select" id="s_rel" name="s_rel" required>
+                  <option value="">Select Relation</option>
+                  <option value="0">Father's name</option>
+                  <option value="1">Mother's name</option>
+                  <option value="2">Husband's name</option>
+                  <option value="3">Guardian's name</option>
+                </select>
+                <small class="text-danger" id="s_relErr">&nbsp;</small>
+              </div>
+
+              <div class="col-md-5 mb-3">
+                <label for="father_name" class="form-label">Parent/Husband/Guardian Name</label>
+                <input type="text" class="form-control" id="father_name" name="father_name" required>
+                <small class="text-danger" id="father_nameErr">&nbsp;</small>
+              </div>
+
+              <div class="col-md-4 mb-3">
+                <label for="s_gender" class="form-label">Select Gender</label>
+                <select class="form-select" id="s_gender" name="s_gender" required>
+                  <option value="">Select Gender</option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                  <option value="Other">Other</option>
+                </select>
+                <small class="text-danger" id="s_genderErr">&nbsp;</small>
+              </div>
+
+              <div class="col-md-4 mb-3">
+                <label for="dob" class="form-label">Date of Birth</label>
+                <input type="date" class="form-control" id="dob" name="dob" required>
+                <small class="text-danger" id="dobErr">&nbsp;</small>
+              </div>
+
+              <div class="col-md-4 mb-3">
+                <label for="s_phone" class="form-label">Phone Number</label>
+                <input type="text" class="form-control" id="s_phone" name="s_phone" required pattern="^[6-9]\d{9}$" minlength="10" maxlength="10">
+                <small class="text-danger" id="s_phoneErr">&nbsp;</small>
+              </div>
+
+              <div class="col-md-12 mb-3">
+                <label for="qualification" class="form-label">Qualification</label>
+                <input type="text" class="form-control" id="qualification" name="qualification" required>
+                <small class="text-danger" id="qualificationErr">&nbsp;</small>
+              </div>
+
+              <div class="col-md-12 mb-3">
+                <label for="s_address" class="form-label">Address</label>
+                <textarea class="form-control" id="s_address" name="s_address" rows="3" required></textarea>
+                <small class="text-danger" id="s_addressErr">&nbsp;</small>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="email" class="form-label">Email (for login)</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+                <small class="text-danger" id="emailErr">&nbsp;</small>
+              </div>
+
+              <div class="col-md-6 mb-3">
+                <label for="password" class="form-label">Password (for login)</label>
+                <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                <small class="text-danger" id="passwordErr">&nbsp;</small>
+              </div>
+
+              <div class="col-md-6 offset-md-3">
+                <input type="hidden" name="onlineAd" value="1">
+                <button type="submit" class="btn btn-primary w-100" id="cntSub">
+                  <i class="fa fa-rocket"></i> <span class="idvd">|</span> Submit
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content confetti-bg">
+      <div class="modal-header bg-secondary">
+        <h1 class="modal-title fs-5 text-warning" id="successModalLabel">Your online admission is successfully done.</h1>
+        <button type="button" class="btn btn-light" data-bs-dismiss="modal" aria-label="Close"><b>X</b></button>
+      </div>
+      <div class="modal-body">
+        <p>Hey, <span class="fw-bold" id="cNAME"></span> please visit center & submit below documents. </p>
+        <ul>
+          <li>AADHAR CARD, VOTER ID, PAN CARD, SCHOOL/COLLEGE ID CARD</li>
+          <li>PASSPORT SIZE PHOTO</li>
+          <li>MARKSHEET</li>
+        </ul>
+
+        <div class="table-responsive">
+          <table class="table">
+            <tbody>
+              <tr>
+                <td class="nceb-heading-primary fw-bold">STUDENT ID</td>
+                <th scope="row" class="text-secondary">: <span id="SID"></span></th>
+              </tr>
+              <tr>
+                <td class="nceb-heading-primary fw-bold">CENTER NAME</td>
+                <th scope="row" class="text-secondary">: <span id="CN"></span></th>
+              </tr>
+              <tr>
+                <td class="nceb-heading-primary fw-bold">CENTER ADDRESS</td>
+                <th scope="row" class="text-secondary">: <span id="CA"></span></th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Get form elements
+  const form = document.getElementById('registrationForm');
+  const stateEl = document.getElementById('state');
+  const centerEl = document.getElementById('center_id');
+  const courseEl = document.getElementById('course_id');
+  const courseBox = document.getElementById('courseContainer');
+
+  const ct = document.getElementById('ct');
+  const cd = document.getElementById('cd');
+  const csub = document.getElementById('csub');
+  const csem = document.getElementById('csem');
+
+  // Track form state
+  let formState = {
+    stateSelected: false,
+    centersLoaded: false,
+    coursesLoaded: false
+  };
+
+  // Helper function to fetch JSON
+  async function fetchJSON(url) {
+    try {
+      const res = await fetch(url);
+      if (!res.ok) {
+        throw new Error(`HTTP ${res.status}: ${res.statusText}`);
+      }
+      const data = await res.json();
+      console.log('Fetched from', url, ':', data);
+      return data;
+    } catch (error) {
+      console.error('Fetch error for', url, ':', error);
+      throw error;
+    }
+  }
+
+  // Clear error messages
+  function clearErrors() {
+    document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '&nbsp;');
+  }
+
+  // Show error message
+  function showError(fieldId, message) {
+    const errorEl = document.getElementById(fieldId + 'Err');
+    if (errorEl) {
+      errorEl.textContent = message;
+      console.log('Showing error for', fieldId, ':', message);
+    }
+  }
+
+  // State change handler
+  stateEl.addEventListener('change', async function() {
+    const selectedState = stateEl.value;
+    console.log('State changed to:', selectedState);
+    
+    // Reset form state
+    formState.stateSelected = !!selectedState;
+    formState.centersLoaded = false;
+    formState.coursesLoaded = false;
+    
+    // Reset dependent fields
+    centerEl.innerHTML = '<option value="">Select Center</option>';
+    centerEl.disabled = true;
+    courseEl.innerHTML = '<option value="">Select Course</option>';
+    courseEl.disabled = true;
+    courseBox.classList.add('d-none');
+
+    if (!selectedState) {
+      console.log('No state selected, stopping');
+      return;
+    }
+
+    try {
+      // Show loading state
+      centerEl.innerHTML = '<option value="">Loading centers...</option>';
+      
+      const data = await fetchJSON(`/api/centers/by-state?state=${encodeURIComponent(selectedState)}`);
+      
+      if (!data.ok) {
+        throw new Error(data.error || 'Failed to load centers');
+      }
+
+      const centers = data.centers || [];
+      console.log('Loaded centers:', centers.length);
+      
+      if (centers.length === 0) {
+        centerEl.innerHTML = '<option value="">No centers available</option>';
+        centerEl.disabled = true;
+        alert('No approved centers available in the selected state. Please choose another state.');
+        return;
+      }
+
+      // Populate centers
+      centerEl.innerHTML = '<option value="">Select Center</option>';
+      centers.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c._id;
+        opt.textContent = `${c.inst || 'Center'} — ${c.cenAdr || 'Address'}`;
+        opt.dataset.inst = c.inst || '';
+        opt.dataset.cenAdr = c.cenAdr || '';
+        centerEl.appendChild(opt);
+      });
+      centerEl.disabled = false;
+      formState.centersLoaded = true;
+
+      // Load courses
+      courseEl.innerHTML = '<option value="">Loading courses...</option>';
+      const courseData = await fetchJSON('/api/courses');
+      
+      if (courseData.ok) {
+        courseEl.innerHTML = '<option value="">Select Course</option>';
+        (courseData.courses || []).forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.title;
+          courseEl.appendChild(opt);
+        });
+        courseEl.disabled = false;
+        formState.coursesLoaded = true;
+        console.log('Loaded courses:', courseData.courses.length);
+      }
+    } catch (e) {
+      console.error('Error in state change:', e);
+      centerEl.innerHTML = '<option value="">Error loading centers</option>';
+      courseEl.innerHTML = '<option value="">Error loading courses</option>';
+      alert('Failed to load centers/courses. Please try again. Error: ' + e.message);
+    }
+  });
+
+  // Course change handler
+  courseEl.addEventListener('change', async function() {
+    const courseId = courseEl.value;
+    console.log('Course changed to:', courseId);
+    
+    if (!courseId) {
+      courseBox.classList.add('d-none');
+      return;
+    }
+
+    try {
+      const data = await fetchJSON(`/api/courses/${courseId}`);
+      if (!data.ok) throw new Error('Failed to load course details');
+      
+      const c = data.course;
+      ct.textContent = c.type || '-';
+      cd.textContent = c.duration || '-';
+      csub.textContent = (c.subjects || []).join(', ') || '-';
+      csem.textContent = c.semesters != null ? c.semesters : '-';
+      courseBox.classList.remove('d-none');
+      console.log('Course details loaded:', c);
+    } catch (e) {
+      console.error('Error loading course details:', e);
+      courseBox.classList.add('d-none');
+    }
+  });
+
+  // Form submission handler
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    console.log('Form submitted');
+    clearErrors();
+
+    // Get all form values using FormData for reliability
+    const formData = new FormData(form);
+    const payload = {};
+    
+    // Convert FormData to regular object
+    for (let [key, value] of formData.entries()) {
+      payload[key] = typeof value === 'string' ? value.trim() : value;
+    }
+
+    console.log('Form payload:', payload);
+    console.log('Form state:', formState);
+
+    // Enhanced validation with better error messages
+    let hasErrors = false;
+
+    // Check form readiness
+    if (!formState.stateSelected || !payload.state) {
+      showError('state', 'Please select a state');
+      hasErrors = true;
+    }
+    
+    if (!formState.centersLoaded || !payload.center_id) {
+      showError('center_id', 'Please select a center');
+      hasErrors = true;
+    }
+    
+    if (!formState.coursesLoaded || !payload.course_id) {
+      showError('course_id', 'Please select a course');
+      hasErrors = true;
+    }
+
+    // Validate student details
+    if (!payload.student_name) {
+      showError('student_name', 'Please provide student name');
+      hasErrors = true;
+    }
+    
+    if (!payload.s_rel) {
+      showError('s_rel', 'Please select relation');
+      hasErrors = true;
+    }
+    
+    if (!payload.father_name) {
+      showError('father_name', 'Please provide guardian name');
+      hasErrors = true;
+    }
+    
+    if (!payload.s_gender) {
+      showError('s_gender', 'Please select gender');
+      hasErrors = true;
+    }
+    
+    if (!payload.dob) {
+      showError('dob', 'Please provide date of birth');
+      hasErrors = true;
+    }
+    
+    if (!payload.s_phone || !/^[6-9]\d{9}$/.test(payload.s_phone)) {
+      showError('s_phone', 'Please provide valid 10-digit phone number');
+      hasErrors = true;
+    }
+    
+    if (!payload.qualification) {
+      showError('qualification', 'Please provide qualification');
+      hasErrors = true;
+    }
+    
+    if (!payload.s_address) {
+      showError('s_address', 'Please provide address');
+      hasErrors = true;
+    }
+    
+    if (!payload.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(payload.email)) {
+      showError('email', 'Please provide valid email address');
+      hasErrors = true;
+    }
+    
+    if (!payload.password || payload.password.length < 6) {
+      showError('password', 'Password must be at least 6 characters');
+      hasErrors = true;
+    }
+
+    if (hasErrors) {
+      console.log('Form has validation errors, not submitting');
+      return;
+    }
+
+    // Disable submit button
+    const submitBtn = document.getElementById('cntSub');
+    const originalHTML = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+
+    try {
+    //   console.log('Sending request to /api/student-admission');
+        console.log(payload);
+      const res = await fetch('/api/student-admission', {
+        method: 'POST',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      });
+
+      console.log('Response status:', res.status);
+      const data = await res.json();
+      console.log('Response data:', data);
+
+      if (!res.ok || !data.ok) {
+        throw new Error(data.error || `Server error: ${res.status}`);
+      }
+
+      // Success - show modal
+      document.getElementById('cNAME').textContent = payload.student_name;
+      document.getElementById('CN').textContent = data.center?.inst || '';
+      document.getElementById('CA').textContent = data.center?.cenAdr || '';
+      document.getElementById('SID').textContent = data.studentId || '';
+      
+      const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+      successModal.show();
+
+      console.log('Admission successful, redirecting to dashboard in 3 seconds');
+      
+      // Redirect to dashboard after 3 seconds
+      setTimeout(() => {
+        window.location.href = '/student-dashboard';
+      }, 3000);
+
+    } catch (err) {
+      console.error('Submission error:', err);
+      alert('Error: ' + (err.message || 'Server error. Please try again.'));
+    } finally {
+      // Re-enable submit button
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = originalHTML;
+    }
+  });
+});
+</script>
+
+<%- include('../partials/footer') %>

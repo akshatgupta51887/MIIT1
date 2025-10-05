@@ -1,0 +1,301 @@
+<%- include('../partials/header') %>
+
+<div class="container-fluid bg-primary py-3">
+  <div class="row align-items-center">
+    <div class="col-md-4 offset-md-1 p-2">
+      <div class="form-floating">
+        <select class="form-select" id="inputState" aria-label="State / UT">
+          <option selected disabled value="">Select here</option>
+          <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+          <option value="Andhra Pradesh">Andhra Pradesh</option>
+          <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+          <option value="Assam">Assam</option>
+          <option value="Bihar">Bihar</option>
+          <option value="Chandigarh">Chandigarh</option>
+          <option value="Chhattisgarh">Chhattisgarh</option>
+          <option value="Dadra and Nagar Haveli and Daman & Diu">Dadra and Nagar Haveli and Daman & Diu</option>
+          <option value="Delhi">Delhi</option>
+          <option value="Goa">Goa</option>
+          <option value="Gujarat">Gujarat</option>
+          <option value="Haryana">Haryana</option>
+          <option value="Himachal Pradesh">Himachal Pradesh</option>
+          <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+          <option value="Jharkhand">Jharkhand</option>
+          <option value="Karnataka">Karnataka</option>
+          <option value="Kerala">Kerala</option>
+          <option value="Ladakh">Ladakh</option>
+          <option value="Lakshadweep">Lakshadweep</option>
+          <option value="Madhya Pradesh">Madhya Pradesh</option>
+          <option value="Maharashtra">Maharashtra</option>
+          <option value="Manipur">Manipur</option>
+          <option value="Meghalaya">Meghalaya</option>
+          <option value="Mizoram">Mizoram</option>
+          <option value="Nagaland">Nagaland</option>
+          <option value="Odisha">Odisha</option>
+          <option value="Puducherry">Puducherry</option>
+          <option value="Punjab">Punjab</option>
+          <option value="Rajasthan">Rajasthan</option>
+          <option value="Sikkim">Sikkim</option>
+          <option value="Tamil Nadu">Tamil Nadu</option>
+          <option value="Telangana">Telangana</option>
+          <option value="Tripura">Tripura</option>
+          <option value="Uttarakhand">Uttarakhand</option>
+          <option value="Uttar Pradesh">Uttar Pradesh</option>
+          <option value="West Bengal">West Bengal</option>
+        </select>
+        <label for="inputState">Select State / UT</label>
+      </div>
+    </div>
+
+    <div class="col-md-2 p-2">
+      <button id="searchButton" class="btn btn-lg btn-warning w-100">Search</button>
+    </div>
+
+    <div class="col-md-2 p-2">
+      <button id="resetButton" class="btn btn-lg btn-light w-100">Reset</button>
+    </div>
+  </div>
+</div>
+
+<br>
+
+<div class="container">
+  <div class="row">
+    <div class="col-6 offset-3 text-center" id="inMap">
+      <div class="position-relative">
+        <div class="position-absolute top-50 start-50 translate-middle bg-warning bg-opacity-75 p-3">
+          <h6>MIIT Skill Development centers are all across India. Please select State to find registered & approved centers.</h6>
+        </div>
+        <img src="/images/indiaMap.jpg" class="img-fluid w-100" alt="India Map MIIT Centers Illustration" />
+      </div>
+    </div>
+
+    <div class="col-12 mt-4">
+      <div class="table-responsive">
+        <table class="table table-striped align-middle">
+          <thead class="table-dark text-center d-none" id="cdHeading">
+            <tr>
+              <th scope="col">Center Code</th>
+              <th scope="col">Center Name</th>
+              <th scope="col">Address</th>
+              <th scope="col">City</th>
+              <th scope="col">District</th>
+              <th scope="col">State</th>
+              <th scope="col">Center Head</th>
+            </tr>
+          </thead>
+          <tbody id="filter_data">
+            <!-- Empty until search performed -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Results Modal -->
+<div class="modal fade" id="resultsModal" tabindex="-1" aria-labelledby="resultsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="resultsModalLabel">Centers in <span id="modalStateName"></span></h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button> <!-- cross button -->
+      </div>
+      <div class="modal-body">
+        <div id="modalBodyContent">
+          <!-- JS will insert content: loader, "no centers", or list -->
+          <div class="text-center py-5" id="modalLoader">
+            <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+            <div class="mt-2">Searching approved centers...</div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<%- include('../partials/footer') %>
+
+<script src="assets/vendor/jquery/jquery-3.6.0.min.js"></script>
+<script src="assets/js/bootstrap.bundle.min.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const inputState = document.getElementById('inputState');
+  const searchButton = document.getElementById('searchButton');
+  const resetButton = document.getElementById('resetButton');
+  const filterDataTbody = document.getElementById('filter_data');
+  const cdHeading = document.getElementById('cdHeading');
+
+  const resultsModal = new bootstrap.Modal(document.getElementById('resultsModal'), { keyboard: true });
+  const modalStateName = document.getElementById('modalStateName');
+  const modalBodyContent = document.getElementById('modalBodyContent');
+
+  function showLoaderInModal() {
+    modalBodyContent.innerHTML = `
+      <div class="text-center py-5" id="modalLoader">
+        <div class="spinner-border text-primary" role="status" aria-hidden="true"></div>
+        <div class="mt-2">Searching approved centers...</div>
+      </div>
+    `;
+  }
+
+  function showNoCenters(state) {
+    modalBodyContent.innerHTML = `
+      <div class="text-center py-5">
+        <h5>No approved centers found in <strong>${escapeHtml(state)}</strong>.</h5>
+        <p class="text-muted">If you think this is an error, please contact support.</p>
+      </div>
+    `;
+  }
+
+  function showError(message) {
+    modalBodyContent.innerHTML = `
+      <div class="text-center py-5 text-danger">
+        <h5>Error</h5>
+        <p>${escapeHtml(message)}</p>
+      </div>
+    `;
+  }
+
+  function renderCentersInModal(centers) {
+    // Responsive layout: cards for small screens, table for large screens
+    if (!Array.isArray(centers) || centers.length === 0) {
+      modalBodyContent.innerHTML = '';
+      return showNoCenters('');
+    }
+
+    // Build HTML: table for wide screens, cards for small screens
+    const tableHtml = `
+      <div class="table-responsive d-none d-lg-block">
+        <table class="table table-bordered">
+          <thead class="table-secondary">
+            <tr>
+              <th>Center Code</th>
+              <th>Center Name</th>
+              <th>Address</th>
+              <th>City</th>
+              <th>District</th>
+              <th>State</th>
+              <th>Center Head</th>
+              <th>Phone</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${centers.map(c => `
+              <tr>
+                <td>${escapeHtml(c._id || c.centerCode || '')}</td>
+                <td>${escapeHtml(c.inst || c.fullname || '')}</td>
+                <td>${escapeHtml(c.cenAdr || (c.files && c.files.address) || '')}</td>
+                <td>${escapeHtml(c.city || '')}</td>
+                <td>${escapeHtml(c.district || '')}</td>
+                <td>${escapeHtml(c.state || '')}</td>
+                <td>${escapeHtml(c.fullname || '')}</td>
+                <td>${escapeHtml(c.phone || '')}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      </div>
+
+      <div class="d-lg-none">
+        ${centers.map(c => `
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">${escapeHtml(c.inst || c.fullname || '')}</h5>
+              <p class="card-text mb-1"><strong>Center Code:</strong> ${escapeHtml(c._id || '')}</p>
+              <p class="card-text mb-1"><strong>Address:</strong> ${escapeHtml(c.cenAdr || '')}</p>
+              <p class="card-text mb-1"><strong>City:</strong> ${escapeHtml(c.city || '')} &nbsp; <strong>District:</strong> ${escapeHtml(c.district || '')}</p>
+              <p class="card-text mb-1"><strong>Phone:</strong> ${escapeHtml(c.phone || '')}</p>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+
+    modalBodyContent.innerHTML = tableHtml;
+  }
+
+  // simple sanitizer for HTML insertion
+  function escapeHtml(unsafe) {
+    if (unsafe === null || unsafe === undefined) return '';
+    return String(unsafe)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  }
+
+  searchButton.addEventListener('click', function (e) {
+    e.preventDefault();
+    const state = inputState.value;
+    if (!state) {
+      inputState.classList.add('is-invalid');
+      return;
+    }
+    inputState.classList.remove('is-invalid');
+
+    // open modal and show loader
+    modalStateName.textContent = state;
+    showLoaderInModal();
+    resultsModal.show();
+
+    // call backend endpoint - replace /api/centers with your actual route if different
+    const url = `/api/centers?state=${encodeURIComponent(state)}`;
+
+    fetch(url, { method: 'GET', headers: { 'Accept': 'application/json' } })
+      .then(async response => {
+        if (!response.ok) {
+          const text = await response.text().catch(()=>null);
+          throw new Error(text || 'Network response was not ok');
+        }
+        return response.json();
+      })
+      .then(data => {
+        if (!data || !data.ok) {
+          throw new Error((data && data.error) ? data.error : 'Invalid response from server');
+        }
+        const centers = data.centers || [];
+        if (centers.length === 0) {
+          showNoCenters(state);
+          // optionally clear table on page
+          filterDataTbody.innerHTML = '<tr><td class="text-center" colspan="7"><em>No approved centers found for this state.</em></td></tr>';
+          cdHeading.classList.add('d-none');
+        } else {
+          // populate the page table as well (non-modal) with the same centers
+          cdHeading.classList.remove('d-none');
+          filterDataTbody.innerHTML = centers.map(c => `
+            <tr class="text-center">
+              <td>${escapeHtml(c._id || '')}</td>
+              <td>${escapeHtml(c.inst || c.fullname || '')}</td>
+              <td>${escapeHtml(c.cenAdr || '')}</td>
+              <td>${escapeHtml(c.city || '')}</td>
+              <td>${escapeHtml(c.district || '')}</td>
+              <td>${escapeHtml(c.state || '')}</td>
+              <td>${escapeHtml(c.fullname || '')}</td>
+            </tr>
+          `).join('');
+
+          // and render in modal
+          renderCentersInModal(centers);
+        }
+      })
+      .catch(err => {
+        console.error('Fetch centers error:', err);
+        showError(err.message || 'Failed to fetch centers');
+      });
+  });
+
+  resetButton.addEventListener('click', function (e) {
+    e.preventDefault();
+    inputState.value = '';
+    filterDataTbody.innerHTML = '';
+    cdHeading.classList.add('d-none');
+    // optionally hide map or reset UI if needed
+  });
+});
+</script>

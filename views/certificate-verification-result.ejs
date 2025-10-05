@@ -1,0 +1,310 @@
+<%- include('./partials/header') %>
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            
+            <!-- Header Section -->
+            <div class="text-center mb-4">
+                <h2 class="text-primary mb-2">
+                    <i class="bi bi-award"></i> Certificate Verification
+                </h2>
+                <p class="text-muted">Official MIIT Certificate Verification System</p>
+            </div>
+
+            <% if (success && certificate) { %>
+                <!-- SUCCESS: Certificate Found -->
+                <div class="card shadow-lg border-0">
+                    <!-- Success Header -->
+                    <div class="card-header bg-success text-white text-center py-4">
+                        <div class="row align-items-center">
+                            <div class="col">
+                                <h3 class="mb-0">
+                                    <i class="bi bi-patch-check-fill me-2"></i>
+                                    Certificate Verified Successfully
+                                </h3>
+                                <p class="mb-0 mt-2 opacity-75">
+                                    This certificate is <strong>Valid & Active</strong>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body p-0">
+                        <!-- Certificate Display Card -->
+                        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 p-4 border-bottom" style="background: linear-gradient(135deg, #f8faff 0%, #e6f0ff 100%);">
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <div class="d-flex align-items-start mb-3">
+                                        <div class="bg-success rounded-circle p-2 me-3">
+                                            <i class="bi bi-award text-white fs-4"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-primary mb-1">Certificate of <%= certificate.certificateType.charAt(0).toUpperCase() + certificate.certificateType.slice(1) %></h4>
+                                            <p class="text-muted mb-0">Awarded by <%= certificate.issuedBy %></p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4 text-md-end">
+                                    <div class="badge bg-success fs-6 px-3 py-2">
+                                        <i class="bi bi-shield-check me-1"></i>
+                                        Grade: <%= certificate.grade %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Certificate Details -->
+                        <div class="p-4">
+                            <div class="row g-4">
+                                <!-- Student Information -->
+                                <div class="col-md-6">
+                                    <div class="card bg-light border-0 h-100">
+                                        <div class="card-header bg-primary text-white">
+                                            <h6 class="mb-0">
+                                                <i class="bi bi-person-circle me-2"></i>Student Information
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table table-borderless mb-0">
+                                                <tr>
+                                                    <td class="fw-bold text-muted">Name:</td>
+                                                    <td><strong><%= certificate.studentName %></strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold text-muted">Student ID:</td>
+                                                    <td><code class="bg-light px-2 py-1 rounded"><%= certificate.studentId %></code></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold text-muted">Email:</td>
+                                                    <td><%= certificate.studentEmail %></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Course Information -->
+                                <div class="col-md-6">
+                                    <div class="card bg-light border-0 h-100">
+                                        <div class="card-header bg-info text-white">
+                                            <h6 class="mb-0">
+                                                <i class="bi bi-book me-2"></i>Course Information
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table table-borderless mb-0">
+                                                <tr>
+                                                    <td class="fw-bold text-muted">Course:</td>
+                                                    <td><strong><%= certificate.course %></strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold text-muted">Type:</td>
+                                                    <td><span class="badge bg-secondary"><%= certificate.courseType %></span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold text-muted">Duration:</td>
+                                                    <td><%= certificate.duration %></td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Center Information -->
+                                <div class="col-md-6">
+                                    <div class="card bg-light border-0 h-100">
+                                        <div class="card-header bg-warning text-dark">
+                                            <h6 class="mb-0">
+                                                <i class="bi bi-building me-2"></i>Training Center
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table table-borderless mb-0">
+                                                <tr>
+                                                    <td class="fw-bold text-muted">Center:</td>
+                                                    <td><strong><%= certificate.center %></strong></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold text-muted">Location:</td>
+                                                    <td><%= certificate.centerLocation %></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold text-muted">Authorized By:</td>
+                                                    <td>MIIT Skill Development</td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Certificate Details -->
+                                <div class="col-md-6">
+                                    <div class="card bg-light border-0 h-100">
+                                        <div class="card-header bg-success text-white">
+                                            <h6 class="mb-0">
+                                                <i class="bi bi-clipboard-check me-2"></i>Certificate Details
+                                            </h6>
+                                        </div>
+                                        <div class="card-body">
+                                            <table class="table table-borderless mb-0">
+                                                <tr>
+                                                    <td class="fw-bold text-muted">Certificate ID:</td>
+                                                    <td><code class="bg-light px-2 py-1 rounded"><%= certificate.certificateId %></code></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold text-muted">Issue Date:</td>
+                                                    <td><%= new Date(certificate.issueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) %></td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="fw-bold text-muted">Valid Until:</td>
+                                                    <td>
+                                                        <% if (certificate.validUntil) { %>
+                                                            <%= new Date(certificate.validUntil).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' }) %>
+                                                        <% } else { %>
+                                                            <span class="badge bg-success">Lifetime</span>
+                                                        <% } %>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Verification Details -->
+                            <div class="row mt-4">
+                                <div class="col-12">
+                                    <div class="alert alert-success border-0 shadow-sm">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-8">
+                                                <h6 class="alert-heading mb-2">
+                                                    <i class="bi bi-shield-check text-success me-2"></i>
+                                                    Verification Successful
+                                                </h6>
+                                                <p class="mb-0">
+                                                    This certificate has been officially verified and is recognized by 
+                                                    <strong>MIIT Skill Development Pvt Ltd</strong>. 
+                                                    The holder has successfully completed the specified course requirements.
+                                                </p>
+                                            </div>
+                                            <div class="col-md-4 text-md-end">
+                                                <div class="text-muted small">
+                                                    <i class="bi bi-calendar-check me-1"></i>
+                                                    Verified on: <%= new Date().toLocaleDateString('en-IN') %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Verification Code (for future reference) -->
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="card border-primary">
+                                        <div class="card-body text-center py-3">
+                                            <h6 class="text-muted mb-2">Verification Code</h6>
+                                            <code class="fs-5 bg-primary text-white px-3 py-2 rounded">
+                                                <%= certificate.verificationCode %>
+                                            </code>
+                                            <p class="text-muted small mt-2 mb-0">
+                                                Use this code for future verification references
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            <% } else { %>
+                <!-- ERROR: Certificate Not Found -->
+                <div class="card shadow-lg border-0">
+                    <div class="card-header bg-danger text-white text-center py-4">
+                        <h3 class="mb-0">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                            Certificate Verification Failed
+                        </h3>
+                    </div>
+                    <div class="card-body text-center py-5">
+                        <div class="mb-4">
+                            <i class="bi bi-x-circle text-danger" style="font-size: 4rem;"></i>
+                        </div>
+                        
+                        <div class="alert alert-danger border-0 shadow-sm mb-4">
+                            <h5 class="alert-heading">Verification Error</h5>
+                            <p class="mb-0"><%= error %></p>
+                        </div>
+
+                        <% if (searchQuery) { %>
+                        <div class="mb-4">
+                            <p class="text-muted">
+                                <strong>Searched for:</strong> 
+                                <code class="bg-light px-2 py-1 rounded text-danger"><%= searchQuery %></code>
+                            </p>
+                        </div>
+                        <% } %>
+
+                        <div class="row justify-content-center">
+                            <div class="col-md-8">
+                                <div class="card bg-light border-0">
+                                    <div class="card-body">
+                                        <h6 class="text-primary mb-3">Verification Tips:</h6>
+                                        <ul class="list-unstyled text-start mb-0">
+                                            <li class="mb-2">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                Ensure the certificate number is entered correctly
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                Try using the verification code from your certificate
+                                            </li>
+                                            <li class="mb-2">
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                Check if the certificate has been issued by MIIT
+                                            </li>
+                                            <li>
+                                                <i class="bi bi-check-circle text-success me-2"></i>
+                                                Contact support if you believe this is an error
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            <% } %>
+
+            <!-- Action Buttons -->
+            <div class="text-center mt-4">
+                <a href="/" class="btn btn-primary btn-lg me-2">
+                    <i class="bi bi-house"></i> Back to Home
+                </a>
+                <button onclick="window.history.back()" class="btn btn-outline-secondary btn-lg">
+                    <i class="bi bi-arrow-left"></i> Verify Another
+                </button>
+            </div>
+
+            <!-- Additional Information -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="card bg-light border-0">
+                        <div class="card-body text-center">
+                            <h6 class="text-primary mb-3">About MIIT Certificate Verification</h6>
+                            <p class="text-muted mb-0">
+                                <i class="bi bi-shield-check text-success me-1"></i>
+                                All certificates are digitally verified and secured by MIIT Skill Development Pvt Ltd. 
+                                For any queries regarding certificate verification, please contact our support team.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('./partials/footer') %>

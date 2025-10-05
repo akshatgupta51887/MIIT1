@@ -1,0 +1,399 @@
+<%- include('../partials/header') %>
+    <div class="container mt-2">
+        <div class="row g-1">
+            <div class="col-md-12">
+                <div class="card shadow border-0 bg-white">
+                    <div class="card-header bg-primary border-bottom border-warning border-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h4 class="text-white m-0">APPLICATION FORM FOR NEW FRANCHISE</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Form: POST to /register and multipart/form-data for file uploads -->
+                        <form class="form p-4" id="registrationForm" method="POST" action="/register" enctype="multipart/form-data">
+                            <input type="hidden" name="cReg" value="1">
+                            <div class="row register-form reg">
+
+                                <div class="col-md-7">
+                                    <div class="row ">
+                                        <div class="form-group col-md-6">
+                                            <input type="text" name="fullname" class="form-control" id="inputName" placeholder="Full name *" required>
+                                            <small class="text-danger" id="nameErr">&nbsp;</small>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <input type="email" name="email" class="form-control" id="inputEmail" placeholder="Enter Email *" required>
+                                            <small class="text-danger" id="emailErr">&nbsp;</small>
+                                        </div>
+
+                                        <!-- PASSWORD FIELDS - NEW ADDITION -->
+                                        <div class="form-group col-md-6">
+                                            <input type="password" name="password" class="form-control" id="inputPassword" placeholder="Password *" minlength="8" required>
+                                            <small class="text-muted">Min 8 characters, include uppercase, lowercase, number</small>
+                                            <small class="text-danger" id="passwordErr">&nbsp;</small>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <input type="password" name="confirmPassword" class="form-control" id="inputConfirmPassword" placeholder="Confirm Password *" required>
+                                            <small class="text-danger" id="confirmPasswordErr">&nbsp;</small>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <input type="text" name="inst" class="form-control" id="inputInstitute" placeholder="Name of Institute">
+                                            <small class="text-danger" id="instituteErr">&nbsp;</small>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <input type="text" name="cenAdr" id="inputCenAddress" class="form-control" placeholder="Address of your center *" required>
+                                            <small class="text-danger" id="cenAddressErr">&nbsp;</small>
+                                        </div>
+
+                                        <!-- State -> dropdown select -->
+                                        <div class="form-group col-md-6">
+                                            <select class="form-control" name="state" id="inputState" required>
+                                                <option value="" disabled selected>Select State *</option>
+                                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                                <option value="Assam">Assam</option>
+                                                <option value="Bihar">Bihar</option>
+                                                <option value="Chhattisgarh">Chhattisgarh</option>
+                                                <option value="Goa">Goa</option>
+                                                <option value="Gujarat">Gujarat</option>
+                                                <option value="Haryana">Haryana</option>
+                                                <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                                <option value="Jharkhand">Jharkhand</option>
+                                                <option value="Karnataka">Karnataka</option>
+                                                <option value="Kerala">Kerala</option>
+                                                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                                <option value="Maharashtra">Maharashtra</option>
+                                                <option value="Manipur">Manipur</option>
+                                                <option value="Meghalaya">Meghalaya</option>
+                                                <option value="Mizoram">Mizoram</option>
+                                                <option value="Nagaland">Nagaland</option>
+                                                <option value="Odisha">Odisha</option>
+                                                <option value="Punjab">Punjab</option>
+                                                <option value="Rajasthan">Rajasthan</option>
+                                                <option value="Sikkim">Sikkim</option>
+                                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                                <option value="Telangana">Telangana</option>
+                                                <option value="Tripura">Tripura</option>
+                                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                                <option value="Uttarakhand">Uttarakhand</option>
+                                                <option value="West Bengal">West Bengal</option>
+                                                <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                                                <option value="Chandigarh">Chandigarh</option>
+                                                <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+                                                <option value="Lakshadweep">Lakshadweep</option>
+                                                <option value="Delhi">Delhi</option>
+                                                <option value="Puducherry">Puducherry</option>
+                                            </select>
+                                            <small class="text-danger" id="stateErr">&nbsp;</small>
+                                        </div>
+
+                                        <!-- District -> text input -->
+                                        <div class="form-group col-md-6">
+                                            <input type="text" class="form-control" name="district" id="inputDistrict" placeholder="District *" required>
+                                            <small class="text-danger" id="districtErr">&nbsp;</small>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <input type="text" name="city" class="form-control" id="inputCity" placeholder="City *" required>
+                                            <small class="text-danger" id="cityErr">&nbsp;</small>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <input type="text" name="pincode" pattern="\d*" maxlength="6" class="form-control" id="inputZip" placeholder="Pincode *" required>
+                                            <small class="text-danger" id="zipErr">&nbsp;</small>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <input type="text" name="tPC" pattern="\d*" maxlength="2" class="form-control" id="inputPc" placeholder="Total no. of PC's">
+                                            <small class="text-danger" id="pcErr">&nbsp;</small>
+                                        </div>
+
+                                        <div class="form-group col-md-6">
+                                            <input type="text" name="staffs" pattern="\d*" maxlength="2" class="form-control" id="inputStaff" placeholder="Staffs *" required>
+                                            <small class="text-danger" id="staffErr">&nbsp;</small>
+                                        </div>
+                                        
+                                        <div class="form-group col-md-12">
+                                            <input type="text" name="phone" pattern="\d*" class="form-control" id="inputPhone" placeholder="Phone Number *" maxlength="10" required aria-label="Phone Number *">
+                                            <small class="text-danger" id="phoneErr">&nbsp;</small>
+                                        </div>
+
+                                        <!-- Password strength indicator -->
+                                        <div class="col-md-12">
+                                            <div id="passwordStrength" class="d-none">
+                                                <h6>Password must contain:</h6>
+                                                <p id="letter" class="text-danger"><i class="nxr-cross"></i> A <strong>lowercase</strong> letter</p>
+                                                <p id="capital" class="text-danger"><i class="nxr-cross"></i> A <strong>capital (uppercase)</strong> letter</p>
+                                                <p id="number" class="text-danger"><i class="nxr-cross"></i> A <strong>number</strong></p>
+                                                <p id="length" class="text-danger"><i class="nxr-cross"></i> Minimum <strong>8 characters</strong></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Rest of your existing form (file uploads, etc.) -->
+                                <div class="col-md-5 row">
+                                    <div class="d-flex justify-content-between align-items-center">
+
+                                        <div class="col-6 m-2">
+                                            <label class="h6 nceb-heading-primary p-1" for="psp">Center Head Photo *</label>
+                                            <div class="rounded-3 p-2 bg-white align-items-center text-center" style="border: 1px solid #ced4da;">
+                                                <div id="ch_img_modal_btn" role="button" data-bs-toggle="modal" data-bs-target="#ch_img_modal">
+                                                    <img src="/images/images/passport.jpg" id="uploaded_ch_img" class="img-fluid" alt="Center Head Photo">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-6 m-2">
+                                            <label class="h6 nceb-heading-primary p-1" for="sign">Center Head Signature *</label>
+                                            <div class="rounded-3 p-2 bg-white align-items-center text-center" style="border: 1px solid #ced4da;">
+                                                <div id="ch_sign_modal_btn" role="button" data-bs-toggle="modal" data-bs-target="#ch_sign_modal">
+                                                    <img src="/images/images/signature.jpg" id="uploaded_ch_sign" class="img-fluid" alt="Center Head Signature">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- fallback file inputs for photo & signature (if user cannot use modal) -->
+                                    <div class="col-12 mt-2">
+                                        <div class="form-group">
+                                            <label for="ch_img_input" class="small">Upload Center Head Photo (fallback)</label>
+                                            <input type="file" name="ch_img" id="ch_img_input" accept="image/*" class="form-control-file">
+                                        </div>
+                                        <div class="form-group mt-2">
+                                            <label for="ch_sign_input" class="small">Upload Center Head Signature (fallback)</label>
+                                            <input type="file" name="ch_sign" id="ch_sign_input" accept="image/*" class="form-control-file">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <br>
+                                        <div class="form-group">
+                                            <label class="h6 nceb-heading-primary p-1" for="aadhar_f">Aadhar Card Front *</label>
+                                            <input type="file" name="aadhar_f" class="form-control-file fileIn" id="aadhar_f" onchange="validateImage('aadhar_f')" accept="image/*" required><br>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm-6">
+                                        <br>
+                                        <div class="form-group">
+                                            <label class="h6 nceb-heading-primary p-1" for="aadhar_b">Aadhar Card Back *</label>
+                                            <input type="file" name="aadhar_b" class="form-control-file fileIn" id="aadhar_b" onchange="validateImage('aadhar_b')" accept="image/*" required><br>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12">
+                                    <p><b>If you face problems while uploading images then visit <a href="https://compressor.io/" target="_blank" rel="noopener noreferrer">https://compressor.io</a> and convert all your image files first then upload on MIIT.</b></p>
+                                    <hr>
+
+                                    <div class="row">
+                                        <div class="col-sm-4">
+                                            <div class="form-group">
+                                                <label class="h6 nceb-heading-primary p-1" for="marksheet">Marks sheet * (Image)</label>
+                                                <input type="file" name="marksheet" class="form-control-file fileIn" id="marksheet" onchange="validateImage('marksheet')" accept="image/*" required><br>
+                                                <small class="text-danger"><b>Diploma, ITI, or any graduation marksheet.</b>&nbsp;</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-4 mb-3">
+                                            <div class="form-group">
+                                                <label class="h6 nceb-heading-primary p-1" for="registration_certificate">Registration Certificate * (Image or PDF)</label>
+                                                <input type="file" name="registration_certificate" class="form-control-file fileIn" id="registration_certificate" onchange="validateIP('registration_certificate')" accept="application/pdf, image/*" required><br>
+                                                <small class="text-danger"><b>MSME Certificate/ Society Certificate / Trust Deed / Local Authority/ Private Limited Company/ LLP/ Etc</b>&nbsp;</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <input type="hidden" name="pss" value="uploads/ffMIIT2019.png">
+                                <!-- passport & signature hidden fields (if your modal sets base64 into these) -->
+                                <input type="hidden" name="passport" id="ch_img_src" value="">
+                                <input type="hidden" name="signature" id="ch_sign_src" value="">
+
+                                <div class="col-md-12 row">
+                                    <div class="col-md-3 col-sm-6" id="aadhar_f_v"></div>
+                                    <div class="col-md-3 col-sm-6" id="aadhar_b_v"></div>
+                                    <div class="col-md-2 col-sm-4" id="marksheet_v"></div>
+                                    <div class="col-md-3 col-sm-8" id="institute_photos_v"></div>
+                                </div>
+
+                                <div class="form-group form-check col-md-12">
+                                    <br>
+                                    <input type="checkbox" class="form-check-input" id="tcBox" required>
+                                    <label class="form-check-label" for="tcBox">I agreed to all <a href="tc-nceb.html" class="text-primary" target="_blank" rel="noopener noreferrer"><b>TERMS &amp; CONDITIONS</b></a> &amp; <a href="pp-nceb.html" class="text-primary" target="_blank" rel="noopener noreferrer"><b>PRIVACY POLICY</b></a> of Mounten Innovative Information Technologies</label>
+                                    <br><small class="text-danger" id="checkErr">&nbsp;</small>
+                                </div>
+
+                                <div class="form-group col-md-6 offset-md-3">
+                                    <input type="hidden" name="dist_id" value="0">
+                                    <button type="submit" class="btn btn-secondary rounded-0 btn-lg w-100" name="regC" id="cntSub"><i class="fa fa-rocket"></i> <span class="idvd">|</span> REGISTER</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Your existing modals... -->
+    <!-- Video Modal, CH IMG Modal, etc. - keep them as they are -->
+    
+    <!-- Updated Success Modal -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content confetti-bg">
+                <div class="modal-header bg-secondary">
+                    <h1 class="modal-title fs-5 text-warning" id="successModalLabel">You are successfully registered with MIIT</h1>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal" aria-label="Close"><b>X</b></button>
+                </div>
+                <div class="modal-body">
+                    <p>Hey, <span class="fw-bold" id="cNAME"></span> please wait till we verify your details. </p>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <tbody>
+                                <tr>
+                                    <td class="nceb-heading-primary fw-bold">CENTER ID</td>
+                                    <th scope="row" class="text-secondary">: <span id="cUID"></span></th>
+                                </tr>
+                                <tr>
+                                    <td class="nceb-heading-primary fw-bold">EMAIL</td>
+                                    <th scope="row" class="text-secondary">: <span id="cEMAIL"></span></th>
+                                </tr>
+                                <tr>
+                                    <td class="nceb-heading-primary fw-bold">LOGIN CREDENTIALS</td>
+                                    <th scope="row" class="text-secondary">: Use your email and the password you created</th>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="bg-white bg-opacity-25">
+                        <p class="text-secondary fw-bold">Use EMAIL and PASSWORD to login to center panel.<br>
+                            Call our verification department on 8897738181 for faster verification.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Password Validation Script -->
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('inputPassword');
+        const confirmPasswordInput = document.getElementById('inputConfirmPassword');
+        const passwordStrength = document.getElementById('passwordStrength');
+        const form = document.getElementById('registrationForm');
+
+        // Password validation elements
+        const letter = document.getElementById('letter');
+        const capital = document.getElementById('capital');
+        const number = document.getElementById('number');
+        const length = document.getElementById('length');
+
+        // Show password requirements when password field is focused
+        passwordInput.addEventListener('focus', function() {
+            passwordStrength.classList.remove('d-none');
+        });
+
+        // Validate password as user types
+        passwordInput.addEventListener('keyup', function() {
+            const password = this.value;
+
+            // Validate lowercase letters
+            const lowerCaseLetters = /[a-z]/g;
+            if (password.match(lowerCaseLetters)) {
+                letter.classList.remove('text-danger');
+                letter.classList.add('text-success');
+                letter.innerHTML = '<i class="nxr-check"></i> A <strong>lowercase</strong> letter';
+            } else {
+                letter.classList.remove('text-success');
+                letter.classList.add('text-danger');
+                letter.innerHTML = '<i class="nxr-cross"></i> A <strong>lowercase</strong> letter';
+            }
+
+            // Validate capital letters
+            const upperCaseLetters = /[A-Z]/g;
+            if (password.match(upperCaseLetters)) {
+                capital.classList.remove('text-danger');
+                capital.classList.add('text-success');
+                capital.innerHTML = '<i class="nxr-check"></i> A <strong>capital (uppercase)</strong> letter';
+            } else {
+                capital.classList.remove('text-success');
+                capital.classList.add('text-danger');
+                capital.innerHTML = '<i class="nxr-cross"></i> A <strong>capital (uppercase)</strong> letter';
+            }
+
+            // Validate numbers
+            const numbers = /[0-9]/g;
+            if (password.match(numbers)) {
+                number.classList.remove('text-danger');
+                number.classList.add('text-success');
+                number.innerHTML = '<i class="nxr-check"></i> A <strong>number</strong>';
+            } else {
+                number.classList.remove('text-success');
+                number.classList.add('text-danger');
+                number.innerHTML = '<i class="nxr-cross"></i> A <strong>number</strong>';
+            }
+
+            // Validate length
+            if (password.length >= 8) {
+                length.classList.remove('text-danger');
+                length.classList.add('text-success');
+                length.innerHTML = '<i class="nxr-check"></i> Minimum <strong>8 characters</strong>';
+            } else {
+                length.classList.remove('text-success');
+                length.classList.add('text-danger');
+                length.innerHTML = '<i class="nxr-cross"></i> Minimum <strong>8 characters</strong>';
+            }
+        });
+
+        // Validate password confirmation
+        confirmPasswordInput.addEventListener('keyup', function() {
+            const password = passwordInput.value;
+            const confirmPassword = this.value;
+            const errorEl = document.getElementById('confirmPasswordErr');
+
+            if (confirmPassword && password !== confirmPassword) {
+                errorEl.textContent = 'Passwords do not match';
+                this.classList.add('is-invalid');
+            } else {
+                errorEl.innerHTML = '&nbsp;';
+                this.classList.remove('is-invalid');
+            }
+        });
+
+        // Form validation before submit
+        form.addEventListener('submit', function(e) {
+            const password = passwordInput.value;
+            const confirmPassword = confirmPasswordInput.value;
+
+            // Password strength validation
+            const hasLower = /[a-z]/.test(password);
+            const hasUpper = /[A-Z]/.test(password);
+            const hasNumber = /[0-9]/.test(password);
+            const hasLength = password.length >= 8;
+
+            if (!hasLower || !hasUpper || !hasNumber || !hasLength) {
+                e.preventDefault();
+                document.getElementById('passwordErr').textContent = 'Password does not meet requirements';
+                return false;
+            }
+
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                document.getElementById('confirmPasswordErr').textContent = 'Passwords do not match';
+                return false;
+            }
+
+            return true;
+        });
+    });
+    </script>
+
+<%- include('../partials/footer') %>

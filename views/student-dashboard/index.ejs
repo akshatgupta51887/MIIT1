@@ -1,0 +1,165 @@
+<%- include('../partials/header') %>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-10 offset-md-1">
+      <div class="card shadow">
+        <div class="card-header bg-primary text-white d-flex justify-content-between">
+          <div>Student Dashboard</div>
+          <div><a class="btn btn-light btn-sm" href="/student-logout">Logout</a></div>
+        </div>
+        <div class="card-body">
+          <h5 class="mb-3">Welcome, <%= student.student.name %></h5>
+          <div class="table-responsive">
+            <table class="table table-bordered">
+              <tbody>
+                <tr>
+                  <td class="fw-bold">Student ID</td>
+                  <td><%= student.studentId %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Email</td>
+                  <td><%= student.auth.email %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Phone</td>
+                  <td><%= student.student.phone %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Qualification</td>
+                  <td><%= student.student.qualification %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Address</td>
+                  <td><%= student.student.address %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Course</td>
+                  <td><%= student.course.title %> (<%= student.course.type %>)</td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Course Duration</td>
+                  <td><%= student.course.duration %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Course Subjects</td>
+                  <td><%= (student.course.subjects || []).join(', ') %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Semesters</td>
+                  <td><%= student.course.semesters %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Center</td>
+                  <td><%= student.center.inst %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Center Address</td>
+                  <td><%= student.center.cenAdr %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Center State</td>
+                  <td><%= student.center.state %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Center Phone</td>
+                  <td><%= student.center.phone %></td>
+                </tr>
+                <tr>
+                  <td class="fw-bold">Registered On</td>
+                  <td><%= new Date(student.createdAt).toLocaleString() %></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Add this section to your student dashboard template -->
+<div class="row mt-4">
+  <div class="col-12">
+      <div class="card shadow">
+          <div class="card-header bg-success text-white">
+              <h5 class="mb-0"><i class="bi bi-award"></i> My Certificates</h5>
+          </div>
+          <div class="card-body">
+              <div id="certificatesContainer">
+                  <div class="text-center">
+                      <div class="spinner-border text-primary" role="status">
+                          <span class="visually-hidden">Loading...</span>
+                      </div>
+                      <p class="mt-2">Loading certificates...</p>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<script>
+// Load student certificates
+async function loadCertificates() {
+  try {
+      const response = await fetch('/api/student/certificates');
+      const result = await response.json();
+      
+      const container = document.getElementById('certificatesContainer');
+      
+      if (result.ok && result.certificates.length > 0) {
+          container.innerHTML = result.certificates.map(cert => `
+              <div class="card mb-3 border-success">
+                  <div class="card-header bg-light">
+                      <div class="row align-items-center">
+                          <div class="col">
+                              <h6 class="mb-0">${cert.certificateId}</h6>
+                              <small class="text-muted">Verification: ${cert.verificationCode}</small>
+                          </div>
+                          <div class="col-auto">
+                              <span class="badge bg-${cert.status === 'active' ? 'success' : 'danger'}">${cert.status}</span>
+                          </div>
+                      </div>
+                  </div>
+                  <div class="card-body">
+                      <div class="row">
+                          <div class="col-md-6">
+                              <p class="mb-1"><strong>Course:</strong> ${cert.course.title}</p>
+                              <p class="mb-1"><strong>Type:</strong> ${cert.certificateType}</p>
+                              <p class="mb-1"><strong>Grade:</strong> <span class="badge bg-primary">${cert.grade}</span></p>
+                          </div>
+                          <div class="col-md-6">
+                              <p class="mb-1"><strong>Issue Date:</strong> ${new Date(cert.issueDate).toLocaleDateString()}</p>
+                              <p class="mb-1"><strong>Valid Until:</strong> ${cert.validUntil ? new Date(cert.validUntil).toLocaleDateString() : 'Lifetime'}</p>
+                              <p class="mb-1"><strong>Issued By:</strong> ${cert.issuedBy}</p>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          `).join('');
+      } else {
+          container.innerHTML = `
+              <div class="text-center py-4">
+                  <i class="bi bi-award text-muted" style="font-size: 3rem;"></i>
+                  <h5 class="mt-3 text-muted">No Certificates Yet</h5>
+                  <p class="text-muted">Complete your course to receive certificates</p>
+              </div>
+          `;
+      }
+  } catch (error) {
+      document.getElementById('certificatesContainer').innerHTML = `
+          <div class="alert alert-danger">
+              <i class="bi bi-exclamation-triangle"></i>
+              Failed to load certificates. Please refresh the page.
+          </div>
+      `;
+  }
+}
+
+// Load certificates when page loads
+document.addEventListener('DOMContentLoaded', loadCertificates);
+</script>
+
+          <div class="mt-3">
+            <a class="btn btn-secondary" href="/">Home</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>

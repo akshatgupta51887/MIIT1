@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Super Admin Dashboard - MIIT</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        .border-left-primary { border-left: 0.25rem solid #4e73df !important; }
+        .border-left-success { border-left: 0.25rem solid #1cc88a !important; }
+        .border-left-warning { border-left: 0.25rem solid #f6c23e !important; }
+        .border-left-info { border-left: 0.25rem solid #36b9cc !important; }
+        .text-xs { font-size: 0.7rem; }
+        .sidebar { min-height: calc(100vh - 56px); }
+
+        /* 🔥 Scrollable tables (5 records max visible) */
+        .scroll-table {
+            max-height: 250px; /* Adjust based on row height for ~5 rows */
+            overflow-y: auto;
+        }
+
+        /* Keep table header fixed while scrolling */
+        .scroll-table table thead th {
+            position: sticky;
+            top: 0;
+            background: #fff;
+            z-index: 2;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/super-admin-dashboard">
+                <i class="bi bi-speedometer2"></i> MIIT Super Admin
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> Admin
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/super-admin-logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-none d-md-block bg-white sidebar border-end">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/super-admin-dashboard">
+                                <i class="bi bi-house"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/centers">
+                                <i class="bi bi-building"></i> Centers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/students">
+                                <i class="bi bi-people"></i> Students
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/callbacks">
+                                <i class="bi bi-telephone"></i> Callback Requests
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/super-admin/certificates">
+                                <i class="bi bi-award"></i> Certificates
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/contact-queries">
+                                <i class="bi bi-envelope"></i> Contact Queries
+                            </a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Dashboard</h1>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-primary shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Total Centers</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= stats.totalCenters || 0 %></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-building fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-success shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Approved Centers</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= stats.approvedCenters || 0 %></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-check-circle fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-warning shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Pending Centers</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= stats.pendingCenters || 0 %></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-clock fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xl-3 col-md-6 mb-4">
+                        <div class="card border-left-info shadow h-100 py-2">
+                            <div class="card-body">
+                                <div class="row no-gutters align-items-center">
+                                    <div class="col mr-2">
+                                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Total Students</div>
+                                        <div class="h5 mb-0 font-weight-bold text-gray-800"><%= stats.totalStudents || 0 %></div>
+                                    </div>
+                                    <div class="col-auto">
+                                        <i class="bi bi-people fa-2x text-gray-300"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
+                </div>
+
+                <!-- Recent Tables -->
+                <div class="row">
+                    <!-- Recent Centers -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Recent Centers</h6>
+                                <a href="/super-admin/centers" class="btn btn-sm btn-primary">View All</a>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive scroll-table">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>State</th>
+                                                <th>Status</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% (recentCenters || []).forEach(center => { %>
+                                            <tr>
+                                                <td><%= center.fullname %></td>
+                                                <td><%= center.state %></td>
+                                                <td>
+                                                    <span class="badge bg-<%= center.status === 'approved' ? 'success' : center.status === 'pending' ? 'warning' : 'danger' %>">
+                                                        <%= center.status %>
+                                                    </span>
+                                                </td>
+                                                <td><%= new Date(center.createdAt).toLocaleDateString() %></td>
+                                            </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Students -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                                <h6 class="m-0 font-weight-bold text-primary">Recent Students</h6>
+                                <a href="/super-admin/students" class="btn btn-sm btn-primary">View All</a>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive scroll-table">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>Student ID</th>
+                                                <th>Name</th>
+                                                <th>Center</th>
+                                                <th>Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% (recentStudents || []).forEach(student => { %>
+                                            <tr>
+                                                <td><%= student.studentId %></td>
+                                                <td><%= student.student.name %></td>
+                                                <td><%= student.center.inst %></td>
+                                                <td><%= new Date(student.createdAt).toLocaleDateString() %></td>
+                                            </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- State-wise Centers -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card shadow mb-4">
+                            <div class="card-header py-3">
+                                <h6 class="m-0 font-weight-bold text-primary">Top States by Center Count</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered">
+                                        <thead>
+                                            <tr>
+                                                <th>State</th>
+                                                <th>Total Centers</th>
+                                                <th>Approved</th>
+                                                <th>Pending</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <% (centersByState || []).forEach(state => { %>
+                                            <tr>
+                                                <td><%= state._id %></td>
+                                                <td><%= state.count %></td>
+                                                <td><span class="badge bg-success"><%= state.approved %></span></td>
+                                                <td><span class="badge bg-warning"><%= state.pending %></span></td>
+                                            </tr>
+                                            <% }) %>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

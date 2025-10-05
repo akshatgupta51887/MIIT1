@@ -1,0 +1,178 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<br>
+<div class="container-fluid bg-secondary text-white">
+    <div class="row g-4">
+        <div class="col-md-5 ps-5 pt-2">
+            <h6 class="nceb-heading-warning">Why MIIT ?</h6>
+            <p class="text-justify">Brilliantly it will be your decision to make a difference between the
+                institutions of other kind and like us as of quality education assumed and as we are certified as
+                quality research education organisations and AN ISO 9001:2015 certified Computer Education Board.
+                We do not work for the sole purpose of the peculier kind but we decided to resolve around the goal
+                of quality education ...</p>
+            <a href="/why-miit" class="text-white">Read more...</a>
+        </div>
+
+        <div class="col-md-3 ps-5 pt-2 footer-section-border-top">
+            <h6 class="nceb-heading-warning">Usefull Links</h6>
+            <ul class="list-unstyled">
+                <li class="py-1"><a href="/miit-faq" class="text-decoration-none text-white">FAQ</a></li>
+                <li class="py-1"><a href="/miit-course-list" class="text-decoration-none text-white">Courses</a></li>
+                <li class="py-1"><a href="/contact-miit" class="text-decoration-none text-white">Feedback</a></li>
+                <li class="py-1"><a href="/register-with-miit" class="text-decoration-none text-white"><span class="text-warning">Minimum</span> Cost Franchise Registration</a></li>
+                <li class="py-1"><a href="/super-admin-dashboard" target="_blank" class="text-decoration-none text-white"> Super Admin Dashboard</a></li>
+
+            </ul>
+        </div>
+
+        <div class="col-md-4 ps-5 pe-5 pt-2 footer-section-border-top">
+            <p>Enter your phone number to get call from us</p>
+            <div class="row">
+                <div class="col-8">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="callme-input"><i class="fa-solid fa-phone"></i></span>
+                        <input type="text" pattern="\d*" maxlength="10" class="form-control" id="callMeInput"
+                            placeholder="+91...." aria-label="Call me input" aria-describedby="callme-input">
+                    </div>
+                    <small id="callMeError" class="text-danger"></small>
+                    <small id="callMeSuccess" class="text-success d-none"></small>
+                </div>
+                <div class="col-4 px-0">
+                    <button type="button" id="callMeBtn" class="btn btn-warning" disabled><b>CALL ME</b></button>
+                </div>
+            </div>
+            <hr>
+            <h6 class="nceb-heading-warning">Follow us</h6>
+            <a href="https://www.facebook.com/Miitcomputereducation20/" target="_blank" class="text-white p-2 text-decoration-none"><i class="fab fa-facebook"></i></a>
+            <a href="https://x.com/MIIT_Computer" target="_blank" class="text-white p-2 text-decoration-none"><i class="fab fa-twitter"></i></a>
+            <a href="https://www.instagram.com/miit_tech_/" target="_blank" class="text-white p-2 text-decoration-none"><i class="fab fa-instagram"></i></a>
+        </div>
+
+        <div class="col-12 bg-primary text-white text-center border-top border-2 border-white">
+            <br>
+            &copy; 2019 - 2025 :: MIIT Skill Development Pvt Ltd<br>
+            <div class="py-3">
+                <a class="text-white" href="/tc-nceb]">Terms &amp; Conditions </a> | <a class="text-white"
+                    href="/sitemap-miit">Sitemap</a> | <a class="text-white" href="pp-nceb">Privacy
+                    Policy</a> | <a class="text-white" href="/cr-miit">Cancellation &amp; Refund Policy</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const callMeInput = document.getElementById("callMeInput");
+    const callMeError = document.getElementById("callMeError");
+    const callMeSuccess = document.getElementById("callMeSuccess");
+    const callMeBtn = document.getElementById("callMeBtn");
+
+    // Input validation
+    callMeInput.addEventListener("input", function(e) {
+        const phone = e.target.value.trim();
+        
+        if (phone.length === 0) {
+            callMeError.textContent = "";
+            callMeSuccess.classList.add('d-none');
+            callMeBtn.setAttribute("disabled", "disabled");
+            return;
+        }
+        
+        if (phone.length !== 10) {
+            callMeError.textContent = "Add 10 digit phone number.";
+            callMeSuccess.classList.add('d-none');
+            callMeBtn.setAttribute("disabled", "disabled");
+        } else if (!/^[6-9]\d{9}$/.test(phone)) {
+            callMeError.textContent = "Invalid phone number. Must start with 6-9.";
+            callMeSuccess.classList.add('d-none');
+            callMeBtn.setAttribute("disabled", "disabled");
+        } else {
+            callMeError.textContent = "";
+            callMeSuccess.classList.add('d-none');
+            callMeBtn.removeAttribute("disabled");
+        }
+    });
+
+    // Submit callback request
+    callMeBtn.addEventListener("click", async function(e) {
+        e.preventDefault();
+        
+        const phone = callMeInput.value.trim();
+        if (!phone) return;
+
+        // Disable button during request
+        callMeBtn.setAttribute("disabled", "disabled");
+        const originalText = callMeBtn.innerHTML;
+        callMeBtn.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Submitting...';
+
+        try {
+            const response = await fetch('/api/callback-request', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ phone: phone })
+            });
+
+            const data = await response.json();
+
+            if (data.ok) {
+                // Success
+                callMeSuccess.textContent = data.message;
+                callMeSuccess.classList.remove('d-none');
+                callMeError.textContent = "";
+                callMeInput.value = "";
+                
+                // Keep button disabled for 30 seconds
+                setTimeout(() => {
+                    callMeBtn.removeAttribute("disabled");
+                }, 30000);
+            } else {
+                // Error
+                callMeError.textContent = data.error;
+                callMeSuccess.classList.add('d-none');
+                callMeBtn.removeAttribute("disabled");
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+            callMeError.textContent = "Network error. Please try again.";
+            callMeSuccess.classList.add('d-none');
+            callMeBtn.removeAttribute("disabled");
+        } finally {
+            callMeBtn.innerHTML = originalText;
+        }
+    });
+});
+</script>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content confetti-bg bg-transparent border-0">
+            <div class="modal-header bg-secondary text-center border-0">
+                <h1 class="modal-title fs-5 text-warning" id="successModalLabel">OUR TOP 10 CENTERS OF 2024</h1>
+                <button type="button" class="btn btn-light" data-bs-dismiss="modal"
+                    aria-label="Close"><b>X</b></button>
+            </div>
+            <div class="modal-body text-center">
+                <img data-src="./images/tc2024.png" class="img-fluid position-relative zi-1">
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="toast-container position-fixed bottom-0 start-50 translate-middle-x" role="alert" aria-live="assertive"
+    aria-atomic="true">
+    <div id="cookieToast" class="toast">
+        <div class="d-flex align-items-center text-bg-light p-1 border-2 shadow">
+            <div class="toast-body">
+                Heyy, This site uses cookies. Read our <a href="/pp-nceb"
+                    class="text-warning fw-bold text-decoration-none">Privacy Policy</a>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+    </div>
+</div>
+
+<script src="/js/nxr-home.min.js"></script>
+</body>
+</html>

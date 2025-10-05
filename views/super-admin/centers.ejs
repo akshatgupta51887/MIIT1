@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Centers Management - MIIT Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/super-admin-dashboard">
+                <i class="bi bi-speedometer2"></i> MIIT Super Admin
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> Admin
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/super-admin-logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-none d-md-block bg-white sidebar border-end">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin-dashboard">
+                                <i class="bi bi-house"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/super-admin/centers">
+                                <i class="bi bi-building"></i> Centers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/students">
+                                <i class="bi bi-people"></i> Students
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/callbacks">
+                                <i class="bi bi-telephone"></i> Callback Requests
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/super-admin/certificates">
+                                <i class="bi bi-award"></i> Certificates
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/contact-queries">
+                                <i class="bi bi-envelope"></i> Contact Queries
+                            </a>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Centers Management</h1>
+                </div>
+
+                <!-- Filters -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <form method="GET" class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label">Status</label>
+                                <select name="status" class="form-select">
+                                    <option value="all" <%= (filters.status === 'all') ? 'selected' : '' %>>All Status</option>
+                                    <option value="pending" <%= (filters.status === 'pending') ? 'selected' : '' %>>Pending</option>
+                                    <option value="approved" <%= (filters.status === 'approved') ? 'selected' : '' %>>Approved</option>
+                                    <option value="rejected" <%= (filters.status === 'rejected') ? 'selected' : '' %>>Rejected</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Search</label>
+                                <input type="text" name="search" class="form-control" placeholder="Search by name, email, institute..." value="<%= filters.search || '' %>">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">&nbsp;</label>
+                                <button type="submit" class="btn btn-primary d-block w-100">Filter</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Centers Table -->
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Centers (Total: <%= pagination.total || 0 %>)</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Institute</th>
+                                        <th>Location</th>
+                                        <th>Phone</th>
+                                        <th>Status</th>
+                                        <th>Created</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% (centers || []).forEach(center => { %>
+                                    <tr>
+                                        <td><%= center.fullname %></td>
+                                        <td><%= center.email %></td>
+                                        <td><%= center.inst %></td>
+                                        <td><%= center.city %>, <%= center.state %></td>
+                                        <td><%= center.phone %></td>
+                                        <td>
+                                            <span class="badge bg-<%= center.status === 'approved' ? 'success' : center.status === 'pending' ? 'warning' : 'danger' %>">
+                                                <%= center.status %>
+                                            </span>
+                                        </td>
+                                        <td><%= new Date(center.createdAt).toLocaleDateString() %></td>
+                                        <td>
+                                            <% if (center.status === 'pending') { %>
+                                                <button class="btn btn-sm btn-success me-1" onclick="updateCenterStatus('<%= center._id %>', 'approve')">
+                                                    <i class="bi bi-check"></i> Approve
+                                                </button>
+                                                <button class="btn btn-sm btn-danger" onclick="updateCenterStatus('<%= center._id %>', 'reject')">
+                                                    <i class="bi bi-x"></i> Reject
+                                                </button>
+                                            <% } else { %>
+                                                <span class="text-muted">No actions</span>
+                                            <% } %>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <% if (pagination.pages > 1) { %>
+                        <nav class="mt-3">
+                            <ul class="pagination justify-content-center">
+                                <% for(let i = 1; i <= pagination.pages; i++) { %>
+                                <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
+                                    <a class="page-link" href="?page=<%= i %>&status=<%= filters.status %>&search=<%= filters.search %>"><%= i %></a>
+                                </li>
+                                <% } %>
+                            </ul>
+                        </nav>
+                        <% } %>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        async function updateCenterStatus(centerId, action) {
+            if (confirm(`Are you sure you want to ${action} this center?`)) {
+                try {
+                    const response = await fetch(`/super-admin/center/${centerId}/${action}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+                    const result = await response.json();
+                    if (result.ok) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + result.error);
+                    }
+                } catch (error) {
+                    alert('Network error. Please try again.');
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .sidebar { min-height: calc(100vh - 56px); }
+    </style>
+</body>
+</html>

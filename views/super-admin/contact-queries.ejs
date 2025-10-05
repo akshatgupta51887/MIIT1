@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Queries - MIIT Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/super-admin-dashboard">
+                <i class="bi bi-speedometer2"></i> MIIT Super Admin
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> Admin
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/super-admin-logout"><i class="bi bi-box-arrow-right"></i> Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-2 d-none d-md-block bg-white sidebar border-end">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin-dashboard">
+                                <i class="bi bi-house"></i> Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/centers">
+                                <i class="bi bi-building"></i> Centers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/students">
+                                <i class="bi bi-people"></i> Students
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/callbacks">
+                                <i class="bi bi-telephone"></i> Callback Requests
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/super-admin/certificates">
+                                <i class="bi bi-award"></i> Certificates
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/super-admin/contact-queries">
+                                <i class="bi bi-envelope"></i> Contact Queries
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-10 ms-sm-auto px-md-4">
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">Contact Queries Management</h1>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="card bg-warning text-white">
+                            <div class="card-body">
+                                <h6>New Queries</h6>
+                                <h3><%= (queries || []).filter(q => q.status === 'new').length %></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-info text-white">
+                            <div class="card-body">
+                                <h6>In Progress</h6>
+                                <h3><%= (queries || []).filter(q => q.status === 'in-progress').length %></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-success text-white">
+                            <div class="card-body">
+                                <h6>Resolved</h6>
+                                <h3><%= (queries || []).filter(q => q.status === 'resolved').length %></h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card bg-secondary text-white">
+                            <div class="card-body">
+                                <h6>Total Queries</h6>
+                                <h3><%= pagination.total || 0 %></h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Queries Table -->
+                <div class="card shadow">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Contact Queries (Total: <%= pagination.total || 0 %>)</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Contact</th>
+                                        <th>Message</th>
+                                        <th>Status</th>
+                                        <th>Priority</th>
+                                        <th>Date</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <% (queries || []).forEach(query => { %>
+                                    <tr class="<%= query.status === 'new' ? 'table-warning' : '' %>">
+                                        <td><strong><%= query.fullname %></strong></td>
+                                        <td>
+                                            <i class="bi bi-envelope text-primary"></i> <%= query.email %><br>
+                                            <i class="bi bi-telephone text-success"></i> +91 <%= query.phone %>
+                                        </td>
+                                        <td>
+                                            <%= query.message.substring(0, 100) %><%= query.message.length > 100 ? '...' : '' %>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-<%= 
+                                                query.status === 'new' ? 'warning' : 
+                                                query.status === 'in-progress' ? 'info' : 
+                                                query.status === 'resolved' ? 'success' : 'secondary' 
+                                            %>">
+                                                <%= query.status %>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <span class="badge bg-<%= 
+                                                query.priority === 'urgent' ? 'danger' : 
+                                                query.priority === 'high' ? 'warning' : 
+                                                query.priority === 'medium' ? 'info' : 'secondary' 
+                                            %>">
+                                                <%= query.priority %>
+                                            </span>
+                                        </td>
+                                        <td><%= new Date(query.createdAt).toLocaleDateString() %></td>
+                                        <td>
+                                            <!-- View button -->
+                                            <button class="btn btn-sm btn-primary mb-1 view-query-btn"
+                                                    data-query='<%- JSON.stringify(query) %>'>
+                                                <i class="bi bi-eye"></i> View
+                                            </button>
+
+                                            <!-- Delete button -->
+                                            <button class="btn btn-sm btn-danger delete-query-btn"
+                                                    data-id="<%= query._id %>">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <% }) %>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <!-- Pagination -->
+                        <% if (pagination.pages > 1) { %>
+                        <nav class="mt-3">
+                            <ul class="pagination justify-content-center">
+                                <% for(let i = 1; i <= pagination.pages; i++) { %>
+                                <li class="page-item <%= i === pagination.page ? 'active' : '' %>">
+                                    <a class="page-link" href="?page=<%= i %>&status=<%= filters.status %>&priority=<%= filters.priority %>&search=<%= filters.search %>"><%= i %></a>
+                                </li>
+                                <% } %>
+                            </ul>
+                        </nav>
+                        <% } %>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Query Details Modal -->
+    <div class="modal fade" id="queryModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Query Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body" id="queryDetails">
+                    <!-- Query details will be loaded here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentQueryId = null;
+
+        // Event delegation for buttons
+        document.addEventListener('click', function (e) {
+            // View button
+            if (e.target.closest('.view-query-btn')) {
+                const btn = e.target.closest('.view-query-btn');
+                const query = JSON.parse(btn.dataset.query);
+                showQueryModal(query);
+            }
+
+            // Delete button
+            if (e.target.closest('.delete-query-btn')) {
+                const btn = e.target.closest('.delete-query-btn');
+                const queryId = btn.dataset.id;
+                deleteQuery(queryId);
+            }
+        });
+
+        function showQueryModal(query) {
+            currentQueryId = query._id;
+
+            const content = `
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Contact Information</h6>
+                        <table class="table table-bordered">
+                            <tr><th>Name</th><td>${query.fullname}</td></tr>
+                            <tr><th>Email</th><td>${query.email}</td></tr>
+                            <tr><th>Phone</th><td>+91 ${query.phone}</td></tr>
+                            <tr><th>IP Address</th><td>${query.ipAddress || 'N/A'}</td></tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary">Query Status</h6>
+                        <table class="table table-bordered">
+                            <tr><th>Status</th><td><span class="badge bg-info">${query.status}</span></td></tr>
+                            <tr><th>Priority</th><td><span class="badge bg-warning">${query.priority}</span></td></tr>
+                            <tr><th>Submitted</th><td>${new Date(query.createdAt).toLocaleString()}</td></tr>
+                            <tr><th>Last Updated</th><td>${new Date(query.updatedAt).toLocaleString()}</td></tr>
+                        </table>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6 class="text-primary">Message</h6>
+                        <div class="alert alert-light">${query.message}</div>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <h6 class="text-primary">Update Query</h6>
+                        <form id="updateQueryForm">
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <select class="form-select" id="statusSelect">
+                                        <option value="new" ${query.status === 'new' ? 'selected' : ''}>New</option>
+                                        <option value="in-progress" ${query.status === 'in-progress' ? 'selected' : ''}>In Progress</option>
+                                        <option value="resolved" ${query.status === 'resolved' ? 'selected' : ''}>Resolved</option>
+                                        <option value="closed" ${query.status === 'closed' ? 'selected' : ''}>Closed</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <select class="form-select" id="prioritySelect">
+                                        <option value="low" ${query.priority === 'low' ? 'selected' : ''}>Low</option>
+                                        <option value="medium" ${query.priority === 'medium' ? 'selected' : ''}>Medium</option>
+                                        <option value="high" ${query.priority === 'high' ? 'selected' : ''}>High</option>
+                                        <option value="urgent" ${query.priority === 'urgent' ? 'selected' : ''}>Urgent</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <textarea class="form-control" id="adminNotesInput" placeholder="Admin notes...">${query.adminNotes || ''}</textarea>
+                                </div>
+                                <div class="col-12">
+                                    <button type="button" class="btn btn-primary" onclick="updateQuery()">Update Query</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('queryDetails').innerHTML = content;
+            const modal = new bootstrap.Modal(document.getElementById('queryModal'));
+            modal.show();
+        }
+
+        async function updateQuery() {
+            if (!currentQueryId) return;
+
+            const status = document.getElementById('statusSelect').value;
+            const priority = document.getElementById('prioritySelect').value;
+            const adminNotes = document.getElementById('adminNotesInput').value;
+
+            try {
+                const response = await fetch(`/super-admin/contact-query/${currentQueryId}/update`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status, priority, adminNotes })
+                });
+
+                const result = await response.json();
+                if (result.ok) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + result.error);
+                }
+            } catch (error) {
+                alert('Network error. Please try again.');
+            }
+        }
+
+        async function deleteQuery(queryId) {
+            if (confirm('Are you sure you want to delete this query? This action cannot be undone.')) {
+                try {
+                    const response = await fetch(`/super-admin/contact-query/${queryId}/delete`, {
+                        method: 'DELETE',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    const result = await response.json();
+                    if (result.ok) {
+                        location.reload();
+                    } else {
+                        alert('Error: ' + result.error);
+                    }
+                } catch (error) {
+                    alert('Network error. Please try again.');
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .sidebar { min-height: calc(100vh - 56px); }
+    </style>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<%- include('../partials/header') %>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-4 offset-md-4">
+      <div class="card">
+        <div class="card-header bg-warning text-dark">Center Login</div>
+        <div class="card-body">
+          <% if (typeof error !== 'undefined' && error) { %>
+            <div class="alert alert-danger"><%= error %></div>
+          <% } %>
+          <form method="post" action="/center-login">
+            <div class="mb-3">
+              <label class="form-label">Email Address</label>
+              <input class="form-control" type="email" name="email" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Password</label>
+              <input class="form-control" type="password" name="password" required>
+            </div>
+            <button class="btn btn-warning w-100" type="submit">Login</button>
+            <div class="text-center mt-2">
+              <a href="/register-with-miit">Register new center?</a>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="text-center mt-3">
+        <a href="/">Back to Home</a>
+      </div>
+    </div>
+  </div>
+</div>
+<%- include('../partials/footer') %>
