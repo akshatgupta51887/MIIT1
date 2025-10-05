@@ -5,10 +5,7 @@ const mongoose = require('mongoose');
 const multer = require('multer');
 const fs = require('fs');
 const session = require('express-session');
-const MongoStore = require('connect-mongo');
 const bcrypt = require('bcrypt');
-
-
 
 // Import models
 const Center = require('./models/Center');
@@ -23,7 +20,10 @@ const app = express();
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Static files - MOVED EARLY
+// Trust proxy for accurate IP addresses
+app.set('trust proxy', 1);
+
+// Static files
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Body parsing middleware
@@ -37,23 +37,25 @@ app.use(express.urlencoded({
   limit: '5mb'
 }));
 
-// Session middleware - BEFORE auth middleware
-const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://miitcomputereducation20_db_user:q4m3ZpV6SZL17LNe@cluster0.4o9bytx.mongodb.net/miit';
-
+// FIXED: Simple in-memory session (no MongoDB store)
 app.use(session({
-  secret: 'MIIT',
+  secret: 'MIIT_SECRET_KEY_2025_VERY_SECURE_CHANGE_IN_PRODUCTION',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({ 
-    mongoUrl: `mongodb+srv://miitcomputereducation20_db_user:q4m3ZpV6SZL17LNe@cluster0.4o9bytx.mongodb.net/sessions`,
-    touchAfter: 24 * 3600
-  }),
   cookie: { 
     maxAge: 1000 * 60 * 60 * 4, // 4 hours
     httpOnly: true,
-    secure: process.env.NODE_ENV === 'production'
+    secure: false, // Set to true only in HTTPS production
+    sameSite: 'lax'
   }
 }));
+
+// MongoDB connection
+const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://miitcomputereducation20_db_user:q4m3ZpV6SZL17LNe@cluster0.4o9bytx.mongodb.net/miit';
+
+mongoose.connect(MONGO_URI)
+  .then(() => console.log('✅ MongoDB connected'))
+  .catch(err => console.error('❌ MongoDB connection error:', err));
 
 // CRITICAL: Auth middleware MUST be BEFORE all routes
 app.use(async (req, res, next) => {
@@ -76,6 +78,8 @@ app.use(async (req, res, next) => {
           name: student.student.name,
           email: student.auth.email
         };
+      } else {
+        req.session.studentId = null;
       }
     }
 
@@ -89,11 +93,12 @@ app.use(async (req, res, next) => {
           name: center.inst || center.fullname,
           email: center.email
         };
+      } else {
+        req.session.centerId = null;
       }
     }
   } catch (err) {
     console.error('Auth middleware error:', err);
-    // Keep defaults if error occurs
   }
 
   next();
@@ -128,7 +133,6 @@ const COURSES = [
   { id: 'c25', title: 'Professional Diploma in Computer Applications', type: 'Diploma', duration: '6 months', subjects: ['Introduction to Computing','Programming Foundation'], semesters: 2 }
 ];
 
-
 // Helper functions
 function ensureStudent(req, res, next) {
   if (req.session && req.session.studentId) return next();
@@ -140,16 +144,16 @@ function ensureCenter(req, res, next) {
   return res.redirect('/center-login');
 }
 
+function ensureSuperAdmin(req, res, next) {
+  if (req.session && req.session.superAdmin) return next();
+  return res.redirect('/super-admin-login');
+}
+
 function escapeRegExp(string) {
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-// MongoDB connection
-mongoose.connect(MONGO_URI)
-  .then(() => console.log('MongoDB connected.'))
-  .catch(err => console.error('MongoDB connection error:', err));
-
-// === ROUTES START HERE (AFTER ALL MIDDLEWARE) ===
+// === ROUTES START HERE ===
 
 // Main page routes
 app.get('/', (req, res) => res.render('landing/index'));
@@ -165,45 +169,58 @@ app.get('/student-login', (req, res) => {
   res.render('student-login/index', { error: null });
 });
 
+// FIXED: Student login
 app.post('/student-login', async (req, res) => {
   try {
     const { email, password } = req.body || {};
+    console.log('🔐 Student login attempt:', { email: email ? 'provided' : 'missing' });
+    
     if (!email || !password) {
       return res.render('student-login/index', { error: 'Email and password are required.' });
     }
-    const st = await Student.findOne({ 'auth.email': email });
-    if (!st) return res.render('student-login/index', { error: 'Invalid credentials.' });
-    const ok = await st.validatePassword(password);
-    if (!ok) return res.render('student-login/index', { error: 'Invalid credentials.' });
 
-    req.session.regenerate(err => {
-      if (err) {
-        console.error('Session regen error', err);
-        return res.render('student-login/index', { error: 'Login failed. Try again.' });
-      }
-      req.session.studentId = st.studentId;
-      req.session.save(() => res.redirect('/student-dashboard'));
-    });
+    const student = await Student.findOne({ 'auth.email': email.toLowerCase().trim() });
+    
+    if (!student) {
+      return res.render('student-login/index', { error: 'Invalid credentials.' });
+    }
+
+    const isValid = await student.validatePassword(password);
+    
+    if (!isValid) {
+      return res.render('student-login/index', { error: 'Invalid credentials.' });
+    }
+
+    // Simple session assignment
+    req.session.studentId = student.studentId;
+    console.log('✅ Student logged in:', student.studentId);
+    
+    return res.redirect('/student-dashboard');
+
   } catch (e) {
-    console.error('login error', e);
+    console.error('❌ Student login error:', e);
     return res.render('student-login/index', { error: 'Server error' });
   }
 });
 
 app.get('/student-dashboard', ensureStudent, async (req, res) => {
-  const student = await Student.findOne({ studentId: req.session.studentId }).lean();
-  if (!student) {
-    req.session.destroy(() => {});
+  try {
+    const student = await Student.findOne({ studentId: req.session.studentId }).lean();
+    if (!student) {
+      req.session.studentId = null;
+      return res.redirect('/student-login');
+    }
+    res.render('student-dashboard/index', { student });
+  } catch (error) {
+    console.error('Student dashboard error:', error);
+    req.session.studentId = null;
     return res.redirect('/student-login');
   }
-  res.render('student-dashboard/index', { student });
 });
 
 app.get('/student-logout', (req, res) => {
   req.session.studentId = null;
-  req.session.save(() => {
-    req.session.regenerate(() => res.redirect('/student-login'));
-  });
+  res.redirect('/student-login');
 });
 
 // Center routes
@@ -212,55 +229,94 @@ app.get('/center-login', (req, res) => {
   res.render('center-login/index', { error: null });
 });
 
-// Updated center login route in app.js
+// FIXED: Center login
 app.post('/center-login', async (req, res) => {
   try {
     const { email, password } = req.body || {};
+    console.log('🔐 Center login attempt:', { email: email ? 'provided' : 'missing' });
+    
     if (!email || !password) {
       return res.render('center-login/index', { error: 'Email and password are required.' });
     }
 
-    // Find center by email and check if approved [web:109][web:115]
-    const center = await Center.findOne({ email: email, status: 'approved' });
+    const center = await Center.findOne({ 
+      email: email.toLowerCase().trim(), 
+      status: 'approved' 
+    });
+    
     if (!center) {
       return res.render('center-login/index', { error: 'Invalid credentials or center not approved.' });
     }
 
-    // Validate password using bcrypt
-    const isValidPassword = await center.validatePassword(password);
-    if (!isValidPassword) {
+    const isValid = await center.validatePassword(password);
+    
+    if (!isValid) {
       return res.render('center-login/index', { error: 'Invalid credentials.' });
     }
 
-    req.session.regenerate(err => {
-      if (err) {
-        console.error('Session regen error', err);
-        return res.render('center-login/index', { error: 'Login failed. Try again.' });
-      }
-      req.session.centerId = center._id;
-      req.session.save(() => res.redirect('/center-dashboard'));
-    });
+    // Simple session assignment
+    req.session.centerId = center._id;
+    console.log('✅ Center logged in:', center._id);
+    
+    return res.redirect('/center-dashboard');
+
   } catch (e) {
-    console.error('center login error', e);
+    console.error('❌ Center login error:', e);
     return res.render('center-login/index', { error: 'Server error' });
   }
 });
 
-
 app.get('/center-dashboard', ensureCenter, async (req, res) => {
-  const center = await Center.findOne({ _id: req.session.centerId }).lean();
-  if (!center) {
-    req.session.destroy(() => {});
+  try {
+    const center = await Center.findOne({ _id: req.session.centerId }).lean();
+    if (!center) {
+      req.session.centerId = null;
+      return res.redirect('/center-login');
+    }
+    res.render('center-dashboard/index', { center });
+  } catch (error) {
+    console.error('Center dashboard error:', error);
+    req.session.centerId = null;
     return res.redirect('/center-login');
   }
-  res.render('center-dashboard/index', { center });
 });
 
 app.get('/center-logout', (req, res) => {
   req.session.centerId = null;
-  req.session.save(() => {
-    req.session.regenerate(() => res.redirect('/center-login'));
-  });
+  res.redirect('/center-login');
+});
+
+// Super Admin Authentication
+const SUPER_ADMIN_EMAIL = 'admin@miit.in';
+const SUPER_ADMIN_PASSWORD = 'MIIT@2025';
+
+app.get('/super-admin-login', (req, res) => {
+  if (req.session && req.session.superAdmin) return res.redirect('/super-admin-dashboard');
+  res.render('super-admin/login', { error: null });
+});
+
+// FIXED: Super admin login
+app.post('/super-admin-login', (req, res) => {
+  try {
+    const { email, password } = req.body || {};
+    console.log('🔐 Super admin login attempt:', { email: email ? 'provided' : 'missing' });
+    
+    if (email === SUPER_ADMIN_EMAIL && password === SUPER_ADMIN_PASSWORD) {
+      req.session.superAdmin = true;
+      console.log('✅ Super admin logged in');
+      return res.redirect('/super-admin-dashboard');
+    } else {
+      return res.render('super-admin/login', { error: 'Invalid credentials.' });
+    }
+  } catch (error) {
+    console.error('❌ Super admin login error:', error);
+    return res.render('super-admin/login', { error: 'Server error' });
+  }
+});
+
+app.get('/super-admin-logout', (req, res) => {
+  req.session.superAdmin = null;
+  res.redirect('/super-admin-login');
 });
 
 // API routes
@@ -301,172 +357,6 @@ app.get('/api/courses/:id', (req, res) => {
   if (!c) return res.status(404).json({ ok: false, error: 'Course not found' });
   res.json({ ok: true, course: c });
 });
-// Contact Form Submission Route
-app.post('/api/contact', async (req, res) => {
-  try {
-    const { fullname, email, phone, message } = req.body;
-
-    // Validation
-    if (!fullname || !email || !phone || !message) {
-      return res.status(400).json({ 
-        ok: false, 
-        error: 'All fields are required' 
-      });
-    }
-
-    // Clean and validate data
-    const cleanPhone = phone.replace(/\D/g, '');
-    
-    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
-      return res.status(400).json({ 
-        ok: false, 
-        error: 'Please enter a valid 10-digit phone number starting with 6-9' 
-      });
-    }
-
-    // Email validation
-    const emailRegex = /^\S+@\S+\.\S+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ 
-        ok: false, 
-        error: 'Please enter a valid email address' 
-      });
-    }
-
-    // Check for duplicate submission in last 5 minutes (spam prevention)
-    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
-    const recentQuery = await ContactQuery.findOne({
-      $or: [
-        { email: email.toLowerCase().trim() },
-        { phone: cleanPhone }
-      ],
-      createdAt: { $gte: fiveMinutesAgo }
-    });
-
-    if (recentQuery) {
-      return res.status(400).json({ 
-        ok: false, 
-        error: 'You have already submitted a query recently. Please wait before submitting again.' 
-      });
-    }
-
-    // Create new contact query
-    const contactQuery = new ContactQuery({
-      fullname: fullname.trim(),
-      email: email.toLowerCase().trim(),
-      phone: cleanPhone,
-      message: message.trim(),
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.get('User-Agent')
-    });
-
-    await contactQuery.save();
-
-    res.json({ 
-      ok: true, 
-      message: 'Thank you for contacting us! We will get back to you soon.' 
-    });
-
-  } catch (error) {
-    console.error('Contact form error:', error);
-    
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(e => e.message);
-      return res.status(400).json({ 
-        ok: false, 
-        error: errors.join(', ') 
-      });
-    }
-
-    res.status(500).json({ 
-      ok: false, 
-      error: 'Server error. Please try again later.' 
-    });
-  }
-});
-
-// Super Admin Contact Queries Management
-app.get('/super-admin/contact-queries', ensureSuperAdmin, async (req, res) => {
-  try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 20;
-    const status = req.query.status || 'all';
-    const priority = req.query.priority || 'all';
-    const search = req.query.search || '';
-
-    let filter = {};
-    if (status !== 'all') filter.status = status;
-    if (priority !== 'all') filter.priority = priority;
-    if (search) {
-      filter.$or = [
-        { fullname: new RegExp(search, 'i') },
-        { email: new RegExp(search, 'i') },
-        { phone: new RegExp(search, 'i') },
-        { message: new RegExp(search, 'i') }
-      ];
-    }
-
-    const total = await ContactQuery.countDocuments(filter);
-    const queries = await ContactQuery.find(filter)
-      .sort({ createdAt: -1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .lean();
-
-    res.render('super-admin/contact-queries', {
-      queries,
-      pagination: {
-        page,
-        pages: Math.ceil(total / limit),
-        total
-      },
-      filters: { status, priority, search }
-    });
-  } catch (error) {
-    console.error('Contact queries page error:', error);
-    res.render('super-admin/contact-queries', { 
-      queries: [], 
-      pagination: {}, 
-      filters: {}, 
-      error: 'Failed to load contact queries' 
-    });
-  }
-});
-
-// Update Contact Query Status
-app.post('/super-admin/contact-query/:id/update', ensureSuperAdmin, async (req, res) => {
-  try {
-    const { status, priority, adminNotes, assignedTo } = req.body;
-    
-    const updateData = { updatedAt: new Date() };
-    if (status) updateData.status = status;
-    if (priority) updateData.priority = priority;
-    if (adminNotes) updateData.adminNotes = adminNotes;
-    if (assignedTo) updateData.assignedTo = assignedTo;
-    
-    if (status === 'resolved' || status === 'closed') {
-      updateData.resolvedAt = new Date();
-    }
-
-    await ContactQuery.findByIdAndUpdate(req.params.id, updateData);
-    res.json({ ok: true, message: 'Query updated successfully' });
-  } catch (error) {
-    console.error('Query update error:', error);
-    res.status(500).json({ ok: false, error: 'Failed to update query' });
-  }
-});
-
-// Delete Contact Query
-app.delete('/super-admin/contact-query/:id/delete', ensureSuperAdmin, async (req, res) => {
-  try {
-    await ContactQuery.findByIdAndDelete(req.params.id);
-    res.json({ ok: true, message: 'Query deleted successfully' });
-  } catch (error) {
-    console.error('Query delete error:', error);
-    res.status(500).json({ ok: false, error: 'Failed to delete query' });
-  }
-});
-
 
 // Student admission API
 app.post('/api/student-admission', async (req, res) => {
@@ -478,11 +368,9 @@ app.post('/api/student-admission', async (req, res) => {
       email, password
     } = req.body || {};
 
-    console.log('Received admission request:', {
-      state, center_id, course_id, student_name, email
-    });
+    console.log('📝 Admission request:', { state, center_id, course_id, student_name, email });
 
-    // Basic validations
+    // Validations
     if (!state) return res.status(400).json({ ok: false, error: 'State is required' });
     if (!center_id) return res.status(400).json({ ok: false, error: 'Center is required' });
     if (!course_id) return res.status(400).json({ ok: false, error: 'Course is required' });
@@ -501,7 +389,7 @@ app.post('/api/student-admission', async (req, res) => {
       return res.status(400).json({ ok: false, error: 'Invalid phone number' });
     }
 
-    const exists = await Student.findOne({ 'auth.email': email });
+    const exists = await Student.findOne({ 'auth.email': email.toLowerCase().trim() });
     if (exists) return res.status(400).json({ ok: false, error: 'Email already registered' });
 
     const studentData = {
@@ -539,29 +427,18 @@ app.post('/api/student-admission', async (req, res) => {
     await st.setPassword(password);
     await st.save();
 
-    req.session.regenerate(err => {
-      if (err) {
-        console.error('Session regen error', err);
-        return res.json({
-          ok: true,
-          message: 'Admission successful but login session failed.',
-          studentId: st.studentId,
-          center: { inst: center.inst || '', cenAdr: center.cenAdr || '' }
-        });
-      }
-      req.session.studentId = st.studentId;
-      req.session.save(() =>
-        res.json({
-          ok: true,
-          message: 'Admission successful.',
-          studentId: st.studentId,
-          center: { inst: center.inst || '', cenAdr: center.cenAdr || '' }
-        })
-      );
+    // Auto-login
+    req.session.studentId = st.studentId;
+
+    res.json({
+      ok: true,
+      message: 'Admission successful.',
+      studentId: st.studentId,
+      center: { inst: center.inst || '', cenAdr: center.cenAdr || '' }
     });
 
   } catch (e) {
-    console.error('admission error', e);
+    console.error('❌ admission error', e);
     
     if (e.code === 11000) {
       if (e.message.includes('auth.email')) {
@@ -616,7 +493,7 @@ const multerFields = upload.fields([
   { name: 'ch_sign', maxCount: 1 }
 ]);
 
-// Updated center registration route in app.js
+// Center registration
 app.post('/register', (req, res) => {
   multerFields(req, res, async function (err) {
     if (err) {
@@ -630,7 +507,6 @@ app.post('/register', (req, res) => {
         city, pincode, tPC, staffs, phone, pss, passport, signature
       } = req.body;
 
-      // Enhanced validation
       if (!fullname || !email || !phone) {
         return res.status(400).json({ ok: false, error: 'fullname, email and phone are required' });
       }
@@ -643,7 +519,6 @@ app.post('/register', (req, res) => {
         return res.status(400).json({ ok: false, error: 'Passwords do not match' });
       }
 
-      // Password strength validation [web:113][web:116]
       const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
       if (!passwordRegex.test(password)) {
         return res.status(400).json({ 
@@ -652,13 +527,11 @@ app.post('/register', (req, res) => {
         });
       }
 
-      // Check if email already exists
       const existingCenter = await Center.findOne({ email: email });
       if (existingCenter) {
         return res.status(400).json({ ok: false, error: 'Email already registered' });
       }
 
-      // Build file paths (if files present)
       const filePath = (field) => {
         if (req.files && req.files[field] && req.files[field][0]) {
           return path.join('uploads', req.files[field][0].filename);
@@ -666,7 +539,6 @@ app.post('/register', (req, res) => {
         return null;
       };
 
-      // Create new center document
       const centerDoc = new Center({
         cReg: cReg || 1,
         fullname,
@@ -691,10 +563,7 @@ app.post('/register', (req, res) => {
         rawBody: req.body
       });
 
-      // Hash and set password [web:110][web:112]
       await centerDoc.setPassword(password);
-      
-      // Save to database
       await centerDoc.save();
 
       return res.json({
@@ -784,51 +653,24 @@ app.get('/api/gallery', (req, res) => {
 });
 
 // Other page routes
-app.get('/miit-gallery', (req, res) => {
-  res.render('gallery/index');
-});
+app.get('/miit-gallery', (req, res) => res.render('gallery/index'));
+app.get('/top-miit-centers', (req, res) => res.render('top-centers/index'));
+app.get('/miit-course-list', (req, res) => res.render('course-list/index'));
+app.get('/miit-center-list', (req, res) => res.render('center-list/index'));
+app.get('/about-miit', (req, res) => res.render('about/index'));
+app.get('/why-miit', (req, res) => res.render('about/why'));
+app.get('/miit-faq', (req, res) => res.render('FAQ/index'));
+app.get('/contact-miit', (req, res) => res.render('about/contact'));
+app.get('/pp-nceb', (req, res) => res.render('privacy/pp'));
+app.get('/tc-nceb', (req, res) => res.render('privacy/index'));
+app.get('/cr-miit', (req, res) => res.render('privacy/cr'));
+app.get('/sitemap-miit', (req, res) => res.render('privacy/sm'));
 
-app.get('/top-miit-centers', (req, res) => {
-  res.render('top-centers/index');
-});
-
-app.get('/miit-course-list', (req, res) => {
-  res.render('course-list/index');
-});
-
-app.get('/miit-center-list', (req, res) => {
-  res.render('center-list/index');
-});
-app.get('/about-miit', (req, res) => {
-  res.render('about/index');
-});
-app.get('/why-miit', (req, res) => {
-  res.render('about/why');
-});
-app.get('/miit-faq', (req, res) => {
-  res.render('FAQ/index');
-});
-app.get('/contact-miit', (req, res) => {
-  res.render('about/contact');
-});
-app.get('/pp-nceb', (req, res) => {
-  res.render('privacy/pp');
-});
-app.get('/tc-nceb', (req, res) => {
-  res.render('privacy/index');
-});
-app.get('/cr-miit', (req, res) => {
-  res.render('privacy/cr');
-});
-app.get('/sitemap-miit', (req, res) => {
-  res.render('privacy/sm');
-});
-// Center Verification Route
+// Verification routes
 app.post('/center-verification', async (req, res) => {
   try {
     const { center_id } = req.body;
 
-    // Validation
     if (!center_id || typeof center_id !== 'string') {
       return res.status(400).render('verification-result', {
         type: 'center',
@@ -848,17 +690,14 @@ app.post('/center-verification', async (req, res) => {
       });
     }
 
-    // Search for center by multiple fields [web:170][web:173]
     let center = null;
     
-    // Try to find by ObjectId first if it looks like a MongoDB ObjectId
     if (/^[0-9a-fA-F]{24}$/.test(cleanCenterId)) {
       center = await Center.findById(cleanCenterId)
         .select('fullname inst email phone state city status createdAt')
         .lean();
     }
     
-    // If not found by ObjectId, search by other fields
     if (!center) {
       center = await Center.findOne({
         $or: [
@@ -881,7 +720,6 @@ app.post('/center-verification', async (req, res) => {
       });
     }
 
-    // Return center information
     res.render('verification-result', {
       type: 'center',
       success: true,
@@ -910,12 +748,10 @@ app.post('/center-verification', async (req, res) => {
   }
 });
 
-// Student Verification Route
 app.post('/student-verification', async (req, res) => {
   try {  
     const { student_id } = req.body;
 
-    // Validation
     if (!student_id || typeof student_id !== 'string') {
       return res.status(400).render('verification-result', {
         type: 'student',
@@ -935,15 +771,12 @@ app.post('/student-verification', async (req, res) => {
       });
     }
 
-    // Search for student by student ID or other fields
     let student = null;
 
-    // Try to find by studentId first - FIXED: Include 'auth' field
     student = await Student.findOne({ studentId: cleanStudentId })
-      .select('studentId student center course auth status createdAt') // Added 'auth' field
+      .select('studentId student center course auth status createdAt')
       .lean();
 
-    // If not found by studentId, try by email or name - FIXED: Include 'auth' field
     if (!student) {
       student = await Student.findOne({
         $or: [
@@ -951,7 +784,7 @@ app.post('/student-verification', async (req, res) => {
           { 'student.name': new RegExp(cleanStudentId, 'i') }
         ]
       })
-      .select('studentId student center course auth status createdAt') // Added 'auth' field
+      .select('studentId student center course auth status createdAt')
       .lean();
     }
 
@@ -964,14 +797,6 @@ app.post('/student-verification', async (req, res) => {
       });
     }
 
-    console.log('Student found:', {
-      studentId: student.studentId,
-      name: student.student?.name,
-      email: student.auth?.email,
-      hasAuth: !!student.auth
-    });
-
-    // Return student information
     res.render('verification-result', {
       type: 'student',
       success: true,
@@ -979,7 +804,7 @@ app.post('/student-verification', async (req, res) => {
       data: {
         studentId: student.studentId,
         name: student.student.name,
-        email: student.auth?.email || 'N/A', // Now this should work
+        email: student.auth?.email || 'N/A',
         phone: student.student.phone,
         center: student.center.inst,
         centerLocation: student.center.state,
@@ -1003,7 +828,7 @@ app.post('/student-verification', async (req, res) => {
   }
 });
 
-// Super Admin Certificate Management Routes
+// Certificate routes
 app.get('/super-admin/certificates', ensureSuperAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -1049,10 +874,8 @@ app.get('/super-admin/certificates', ensureSuperAdmin, async (req, res) => {
   }
 });
 
-// Issue Certificate Page
 app.get('/super-admin/certificates/issue', ensureSuperAdmin, async (req, res) => {
   try {
-    // Get students who don't have certificates yet (optional filter)
     const students = await Student.find({ status: 'active' })
       .select('studentId student.name auth.email center course')
       .sort({ createdAt: -1 })
@@ -1066,29 +889,24 @@ app.get('/super-admin/certificates/issue', ensureSuperAdmin, async (req, res) =>
   }
 });
 
-// Issue Certificate API
 app.post('/super-admin/certificates/issue', ensureSuperAdmin, async (req, res) => {
   try {
     const { studentId, certificateType, grade, validUntil, notes } = req.body;
 
-    // Validation
     if (!studentId) {
       return res.status(400).json({ ok: false, error: 'Student ID is required' });
     }
 
-    // Find student
     const student = await Student.findOne({ studentId: studentId }).lean();
     if (!student) {
       return res.status(400).json({ ok: false, error: 'Student not found' });
     }
 
-    // Check if certificate already exists
     const existingCert = await Certificate.findOne({ 'student._id': student._id });
     if (existingCert) {
       return res.status(400).json({ ok: false, error: 'Certificate already issued for this student' });
     }
 
-    // Create certificate
     const certificate = new Certificate({
       student: {
         _id: student._id,
@@ -1131,7 +949,6 @@ app.post('/super-admin/certificates/issue', ensureSuperAdmin, async (req, res) =
   }
 });
 
-// Revoke Certificate
 app.post('/super-admin/certificates/:id/revoke', ensureSuperAdmin, async (req, res) => {
   try {
     await Certificate.findByIdAndUpdate(req.params.id, { 
@@ -1145,7 +962,6 @@ app.post('/super-admin/certificates/:id/revoke', ensureSuperAdmin, async (req, r
   }
 });
 
-// Student Certificate API (for student dashboard)
 app.get('/api/student/certificates', ensureStudent, async (req, res) => {
   try {
     const student = await Student.findOne({ studentId: req.session.studentId }).lean();
@@ -1164,12 +980,10 @@ app.get('/api/student/certificates', ensureStudent, async (req, res) => {
   }
 });
 
-// Enhanced Certificate Verification Route - RENDERS GUI
 app.post('/verify-certificate', async (req, res) => {
   try {
-    const { cert_no, type, srchome } = req.body;
+    const { cert_no } = req.body;
 
-    // Validation
     if (!cert_no || typeof cert_no !== 'string') {
       return res.render('certificate-verification-result', {
         success: false,
@@ -1189,16 +1003,13 @@ app.post('/verify-certificate', async (req, res) => {
       });
     }
 
-    // Search for certificate
     let certificate = null;
 
-    // Try to find by certificate ID first
     certificate = await Certificate.findOne({ 
       certificateId: new RegExp(cleanCertNo, 'i'),
       status: 'active'
     }).lean();
 
-    // If not found by certificateId, try by verification code
     if (!certificate) {
       certificate = await Certificate.findOne({
         verificationCode: new RegExp(cleanCertNo, 'i'),
@@ -1206,7 +1017,6 @@ app.post('/verify-certificate', async (req, res) => {
       }).lean();
     }
 
-    // If still not found, try by student ID (backward compatibility)
     if (!certificate) {
       certificate = await Certificate.findOne({
         'student.studentId': new RegExp(cleanCertNo, 'i'),
@@ -1223,7 +1033,6 @@ app.post('/verify-certificate', async (req, res) => {
       });
     }
 
-    // Check if certificate is expired
     if (certificate.validUntil && new Date() > certificate.validUntil) {
       return res.render('certificate-verification-result', {
         success: false,
@@ -1233,7 +1042,6 @@ app.post('/verify-certificate', async (req, res) => {
       });
     }
 
-    // Return certificate information to template
     res.render('certificate-verification-result', {
       success: true,
       error: null,
@@ -1270,102 +1078,291 @@ app.post('/verify-certificate', async (req, res) => {
   }
 });
 
-
-app.get('/api/centers', async (req, res) => {
+// Contact & Callback routes
+app.post('/api/contact', async (req, res) => {
   try {
-    const rawState = req.query.state;
-    if (!rawState || typeof rawState !== 'string' || rawState.trim() === '') {
-      return res.status(400).json({ ok: false, error: 'state query parameter is required' });
+    const { fullname, email, phone, message } = req.body;
+
+    if (!fullname || !email || !phone || !message) {
+      return res.status(400).json({ 
+        ok: false, 
+        error: 'All fields are required' 
+      });
     }
 
-    const state = rawState.trim();
-    let page = parseInt(req.query.page, 10);
-    let limit = parseInt(req.query.limit, 10);
-    if (isNaN(page) || page < 1) page = 1;
-    if (isNaN(limit) || limit < 1) limit = 100;
-    const MAX_LIMIT = 500;
-    limit = Math.min(limit, MAX_LIMIT);
+    const cleanPhone = phone.replace(/\D/g, '');
+    
+    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+      return res.status(400).json({ 
+        ok: false, 
+        error: 'Please enter a valid 10-digit phone number starting with 6-9' 
+      });
+    }
 
-    const escaped = escapeRegExp(state);
-    const stateRegex = new RegExp(`^${escaped}$`, 'i');
+    const emailRegex = /^\S+@\S+\.\S+$/;
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({ 
+        ok: false, 
+        error: 'Please enter a valid email address' 
+      });
+    }
 
-    const filter = {
-      state: { $regex: stateRegex },
-      status: 'approved'
-    };
+    const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000);
+    const recentQuery = await ContactQuery.findOne({
+      $or: [
+        { email: email.toLowerCase().trim() },
+        { phone: cleanPhone }
+      ],
+      createdAt: { $gte: fiveMinutesAgo }
+    });
 
-    const total = await Center.countDocuments(filter);
-    const centers = await Center.find(filter)
-      .select('insert fullname cenAdr city district state phone files createdAt')
+    if (recentQuery) {
+      return res.status(400).json({ 
+        ok: false, 
+        error: 'You have already submitted a query recently. Please wait before submitting again.' 
+      });
+    }
+
+    const contactQuery = new ContactQuery({
+      fullname: fullname.trim(),
+      email: email.toLowerCase().trim(),
+      phone: cleanPhone,
+      message: message.trim(),
+      ipAddress: req.ip || req.connection.remoteAddress,
+      userAgent: req.get('User-Agent')
+    });
+
+    await contactQuery.save();
+
+    res.json({ 
+      ok: true, 
+      message: 'Thank you for contacting us! We will get back to you soon.' 
+    });
+
+  } catch (error) {
+    console.error('Contact form error:', error);
+    
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map(e => e.message);
+      return res.status(400).json({ 
+        ok: false, 
+        error: errors.join(', ') 
+      });
+    }
+
+    res.status(500).json({ 
+      ok: false, 
+      error: 'Server error. Please try again later.' 
+    });
+  }
+});
+
+app.get('/super-admin/contact-queries', ensureSuperAdmin, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
+    const status = req.query.status || 'all';
+    const priority = req.query.priority || 'all';
+    const search = req.query.search || '';
+
+    let filter = {};
+    if (status !== 'all') filter.status = status;
+    if (priority !== 'all') filter.priority = priority;
+    if (search) {
+      filter.$or = [
+        { fullname: new RegExp(search, 'i') },
+        { email: new RegExp(search, 'i') },
+        { phone: new RegExp(search, 'i') },
+        { message: new RegExp(search, 'i') }
+      ];
+    }
+
+    const total = await ContactQuery.countDocuments(filter);
+    const queries = await ContactQuery.find(filter)
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .lean();
 
-    const normalized = centers.map(c => ({
-      _id: c._id,
-      inst: c.inst || '',
-      fullname: c.fullname || '',
-      cenAdr: c.cenAdr || '',
-      city: c.city || '',
-      district: c.district || '',
-      state: c.state || '',
-      phone: c.phone || '',
-      files: c.files || {},
-      createdAt: c.createdAt
-    }));
-
-    return res.json({
-      ok: true,
-      centers: normalized,
-      meta: {
-        total,
+    res.render('super-admin/contact-queries', {
+      queries,
+      pagination: {
         page,
-        limit,
-        pages: Math.ceil(total / limit)
-      }
+        pages: Math.ceil(total / limit),
+        total
+      },
+      filters: { status, priority, search }
     });
-
-  } catch (err) {
-    console.error('GET /api/centers error:', err);
-    return res.status(500).json({ ok: false, error: 'Server error' });
+  } catch (error) {
+    console.error('Contact queries page error:', error);
+    res.render('super-admin/contact-queries', { 
+      queries: [], 
+      pagination: {}, 
+      filters: {}, 
+      error: 'Failed to load contact queries' 
+    });
   }
 });
 
-const SUPER_ADMIN_EMAIL = 'admin@miit.in';
-const SUPER_ADMIN_PASSWORD = 'MIIT@2025'; 
+app.post('/super-admin/contact-query/:id/update', ensureSuperAdmin, async (req, res) => {
+  try {
+    const { status, priority, adminNotes, assignedTo } = req.body;
+    
+    const updateData = { updatedAt: new Date() };
+    if (status) updateData.status = status;
+    if (priority) updateData.priority = priority;
+    if (adminNotes) updateData.adminNotes = adminNotes;
+    if (assignedTo) updateData.assignedTo = assignedTo;
+    
+    if (status === 'resolved' || status === 'closed') {
+      updateData.resolvedAt = new Date();
+    }
 
-function ensureSuperAdmin(req, res, next) {
-  if (req.session && req.session.superAdmin) return next();
-  return res.redirect('/super-admin-login');
-}
-
-// Super Admin Login Routes
-app.get('/super-admin-login', (req, res) => {
-  if (req.session && req.session.superAdmin) return res.redirect('/super-admin-dashboard');
-  res.render('super-admin/login', { error: null });
-});
-
-app.post('/super-admin-login', (req, res) => {
-  const { email, password } = req.body || {};
-  
-  if (email === SUPER_ADMIN_EMAIL && password === SUPER_ADMIN_PASSWORD) {
-    req.session.regenerate(err => {
-      if (err) {
-        return res.render('super-admin/login', { error: 'Login failed. Try again.' });
-      }
-      req.session.superAdmin = true;
-      req.session.save(() => res.redirect('/super-admin-dashboard'));
-    });
-  } else {
-    res.render('super-admin/login', { error: 'Invalid credentials.' });
+    await ContactQuery.findByIdAndUpdate(req.params.id, updateData);
+    res.json({ ok: true, message: 'Query updated successfully' });
+  } catch (error) {
+    console.error('Query update error:', error);
+    res.status(500).json({ ok: false, error: 'Failed to update query' });
   }
 });
 
-// Super Admin Dashboard
+app.delete('/super-admin/contact-query/:id/delete', ensureSuperAdmin, async (req, res) => {
+  try {
+    await ContactQuery.findByIdAndDelete(req.params.id);
+    res.json({ ok: true, message: 'Query deleted successfully' });
+  } catch (error) {
+    console.error('Query delete error:', error);
+    res.status(500).json({ ok: false, error: 'Failed to delete query' });
+  }
+});
+
+app.get('/super-admin/callbacks', ensureSuperAdmin, async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 20;
+    const status = req.query.status || 'all';
+    const search = req.query.search || '';
+
+    let filter = {};
+    if (status !== 'all') filter.status = status;
+    if (search) {
+      filter.phone = new RegExp(search, 'i');
+    }
+
+    const total = await CallbackRequest.countDocuments(filter);
+    const callbacks = await CallbackRequest.find(filter)
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+
+    res.render('super-admin/callbacks', {
+      callbacks,
+      pagination: {
+        page,
+        pages: Math.ceil(total / limit),
+        total
+      },
+      filters: { status, search }
+    });
+  } catch (error) {
+    console.error('Callbacks page error:', error);
+    res.render('super-admin/callbacks', { 
+      callbacks: [], 
+      pagination: {}, 
+      filters: {}, 
+      error: 'Failed to load callback requests' 
+    });
+  }
+});
+
+app.post('/super-admin/callback/:id/status', ensureSuperAdmin, async (req, res) => {
+  try {
+    const { status, notes } = req.body;
+    const validStatuses = ['pending', 'called', 'completed', 'cancelled'];
+    
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ ok: false, error: 'Invalid status' });
+    }
+
+    const updateData = { status };
+    if (notes) updateData.notes = notes;
+
+    await CallbackRequest.findByIdAndUpdate(req.params.id, updateData);
+    res.json({ ok: true, message: 'Status updated successfully' });
+  } catch (error) {
+    console.error('Status update error:', error);
+    res.status(500).json({ ok: false, error: 'Failed to update status' });
+  }
+});
+
+app.post('/api/callback-request', async (req, res) => {
+  try {
+    const { phone } = req.body;
+
+    if (!phone || typeof phone !== 'string') {
+      return res.status(400).json({ 
+        ok: false, 
+        error: 'Phone number is required' 
+      });
+    }
+
+    const cleanPhone = phone.replace(/\D/g, '');
+    
+    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+      return res.status(400).json({ 
+        ok: false, 
+        error: 'Please enter a valid 10-digit phone number starting with 6-9' 
+      });
+    }
+
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const existingRequest = await CallbackRequest.findOne({
+      phone: cleanPhone,
+      createdAt: { $gte: twentyFourHoursAgo }
+    });
+
+    if (existingRequest) {
+      return res.status(400).json({ 
+        ok: false, 
+        error: 'Callback already requested for this number in the last 24 hours' 
+      });
+    }
+
+    const callbackRequest = new CallbackRequest({
+      phone: cleanPhone,
+      ipAddress: req.ip || req.connection.remoteAddress,
+      userAgent: req.get('User-Agent')
+    });
+
+    await callbackRequest.save();
+
+    res.json({ 
+      ok: true, 
+      message: 'Callback request submitted successfully. We will call you soon!' 
+    });
+
+  } catch (error) {
+    console.error('Callback request error:', error);
+    
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map(e => e.message);
+      return res.status(400).json({ 
+        ok: false, 
+        error: errors.join(', ') 
+      });
+    }
+
+    res.status(500).json({ 
+      ok: false, 
+      error: 'Server error. Please try again later.' 
+    });
+  }
+});
+
+// Super admin dashboard
 app.get('/super-admin-dashboard', ensureSuperAdmin, async (req, res) => {
   try {
-    // Get statistics
     const totalCenters = await Center.countDocuments();
     const pendingCenters = await Center.countDocuments({ status: 'pending' });
     const approvedCenters = await Center.countDocuments({ status: 'approved' });
@@ -1374,8 +1371,25 @@ app.get('/super-admin-dashboard', ensureSuperAdmin, async (req, res) => {
     const totalStudents = await Student.countDocuments();
     const activeStudents = await Student.countDocuments({ status: 'active' });
     const inactiveStudents = await Student.countDocuments({ status: 'inactive' });
+
+    let totalCallbacks = 0;
+    let pendingCallbacks = 0;
+    let completedCallbacks = 0;
+    let recentCallbacks = [];
+
+    try {
+      totalCallbacks = await CallbackRequest.countDocuments();
+      pendingCallbacks = await CallbackRequest.countDocuments({ status: 'pending' });
+      completedCallbacks = await CallbackRequest.countDocuments({ status: 'completed' });
+      recentCallbacks = await CallbackRequest.find()
+        .sort({ createdAt: -1 })
+        .limit(5)
+        .select('phone status createdAt')
+        .lean();
+    } catch (e) {
+      console.log('CallbackRequest not available');
+    }
     
-    // Get recent centers and students
     const recentCenters = await Center.find()
       .sort({ createdAt: -1 })
       .limit(5)
@@ -1388,7 +1402,6 @@ app.get('/super-admin-dashboard', ensureSuperAdmin, async (req, res) => {
       .select('studentId student.name auth.email center.inst status createdAt')
       .lean();
 
-    // Get state-wise center distribution
     const centersByState = await Center.aggregate([
       {
         $group: {
@@ -1410,10 +1423,14 @@ app.get('/super-admin-dashboard', ensureSuperAdmin, async (req, res) => {
         rejectedCenters,
         totalStudents,
         activeStudents,
-        inactiveStudents
+        inactiveStudents,
+        totalCallbacks,
+        pendingCallbacks,
+        completedCallbacks
       },
       recentCenters,
       recentStudents,
+      recentCallbacks,
       centersByState
     });
   } catch (error) {
@@ -1422,13 +1439,13 @@ app.get('/super-admin-dashboard', ensureSuperAdmin, async (req, res) => {
       stats: {},
       recentCenters: [],
       recentStudents: [],
+      recentCallbacks: [],
       centersByState: [],
       error: 'Failed to load dashboard data'
     });
   }
 });
 
-// Super Admin Centers Management
 app.get('/super-admin/centers', ensureSuperAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -1470,7 +1487,6 @@ app.get('/super-admin/centers', ensureSuperAdmin, async (req, res) => {
   }
 });
 
-// Super Admin Students Management  
 app.get('/super-admin/students', ensureSuperAdmin, async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -1512,7 +1528,6 @@ app.get('/super-admin/students', ensureSuperAdmin, async (req, res) => {
   }
 });
 
-// Super Admin Actions
 app.post('/super-admin/center/:id/approve', ensureSuperAdmin, async (req, res) => {
   try {
     await Center.findByIdAndUpdate(req.params.id, { status: 'approved' });
@@ -1531,227 +1546,72 @@ app.post('/super-admin/center/:id/reject', ensureSuperAdmin, async (req, res) =>
   }
 });
 
-// Super Admin Logout
-app.get('/super-admin-logout', (req, res) => {
-  req.session.superAdmin = null;
-  req.session.save(() => {
-    req.session.regenerate(() => res.redirect('/super-admin-login'));
-  });
-});
-// Super Admin Callback Requests Management
-app.get('/super-admin/callbacks', ensureSuperAdmin, async (req, res) => {
+app.get('/api/centers', async (req, res) => {
   try {
-    const page = parseInt(req.query.page) || 1;
-    const limit = 20;
-    const status = req.query.status || 'all';
-    const search = req.query.search || '';
-
-    let filter = {};
-    if (status !== 'all') filter.status = status;
-    if (search) {
-      filter.phone = new RegExp(search, 'i');
+    const rawState = req.query.state;
+    if (!rawState || typeof rawState !== 'string' || rawState.trim() === '') {
+      return res.status(400).json({ ok: false, error: 'state query parameter is required' });
     }
 
-    const total = await CallbackRequest.countDocuments(filter);
-    const callbacks = await CallbackRequest.find(filter)
+    const state = rawState.trim();
+    let page = parseInt(req.query.page, 10);
+    let limit = parseInt(req.query.limit, 10);
+    if (isNaN(page) || page < 1) page = 1;
+    if (isNaN(limit) || limit < 1) limit = 100;
+    const MAX_LIMIT = 500;
+    limit = Math.min(limit, MAX_LIMIT);
+
+    const escaped = escapeRegExp(state);
+    const stateRegex = new RegExp(`^${escaped}$`, 'i');
+
+    const filter = {
+      state: { $regex: stateRegex },
+      status: 'approved'
+    };
+
+    const total = await Center.countDocuments(filter);
+    const centers = await Center.find(filter)
+      .select('inst fullname cenAdr city district state phone files createdAt')
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
       .limit(limit)
       .lean();
 
-    res.render('super-admin/callbacks', {
-      callbacks,
-      pagination: {
+    const normalized = centers.map(c => ({
+      _id: c._id,
+      inst: c.inst || '',
+      fullname: c.fullname || '',
+      cenAdr: c.cenAdr || '',
+      city: c.city || '',
+      district: c.district || '',
+      state: c.state || '',
+      phone: c.phone || '',
+      files: c.files || {},
+      createdAt: c.createdAt
+    }));
+
+    return res.json({
+      ok: true,
+      centers: normalized,
+      meta: {
+        total,
         page,
-        pages: Math.ceil(total / limit),
-        total
-      },
-      filters: { status, search }
+        limit,
+        pages: Math.ceil(total / limit)
+      }
     });
-  } catch (error) {
-    console.error('Callbacks page error:', error);
-    res.render('super-admin/callbacks', { 
-      callbacks: [], 
-      pagination: {}, 
-      filters: {}, 
-      error: 'Failed to load callback requests' 
-    });
+
+  } catch (err) {
+    console.error('GET /api/centers error:', err);
+    return res.status(500).json({ ok: false, error: 'Server error' });
   }
 });
-// Update the existing super admin dashboard route to include callback stats
-app.get('/super-admin-dashboard', ensureSuperAdmin, async (req, res) => {
-  try {
-    // Existing stats
-    const totalCenters = await Center.countDocuments();
-    const pendingCenters = await Center.countDocuments({ status: 'pending' });
-    const approvedCenters = await Center.countDocuments({ status: 'approved' });
-    const rejectedCenters = await Center.countDocuments({ status: 'rejected' });
-    
-    const totalStudents = await Student.countDocuments();
-    const activeStudents = await Student.countDocuments({ status: 'active' });
-    const inactiveStudents = await Student.countDocuments({ status: 'inactive' });
-
-    // NEW: Callback stats
-    const totalCallbacks = await CallbackRequest.countDocuments();
-    const pendingCallbacks = await CallbackRequest.countDocuments({ status: 'pending' });
-    const completedCallbacks = await CallbackRequest.countDocuments({ status: 'completed' });
-
-    // Existing recent data
-    const recentCenters = await Center.find()
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .select('fullname email inst state status createdAt')
-      .lean();
-      
-    const recentStudents = await Student.find()
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .select('studentId student.name auth.email center.inst status createdAt')
-      .lean();
-
-    // NEW: Recent callbacks
-    const recentCallbacks = await CallbackRequest.find()
-      .sort({ createdAt: -1 })
-      .limit(5)
-      .select('phone status createdAt')
-      .lean();
-
-    const centersByState = await Center.aggregate([
-      {
-        $group: {
-          _id: '$state',
-          count: { $sum: 1 },
-          approved: { $sum: { $cond: [{ $eq: ['$status', 'approved'] }, 1, 0] } },
-          pending: { $sum: { $cond: [{ $eq: ['$status', 'pending'] }, 1, 0] } }
-        }
-      },
-      { $sort: { count: -1 } },
-      { $limit: 10 }
-    ]);
-
-    res.render('super-admin/dashboard', {
-      stats: {
-        totalCenters,
-        pendingCenters,
-        approvedCenters,
-        rejectedCenters,
-        totalStudents,
-        activeStudents,
-        inactiveStudents,
-        totalCallbacks,        // NEW
-        pendingCallbacks,      // NEW
-        completedCallbacks     // NEW
-      },
-      recentCenters,
-      recentStudents,
-      recentCallbacks,         // NEW
-      centersByState
-    });
-  } catch (error) {
-    console.error('Dashboard error:', error);
-    res.render('super-admin/dashboard', { 
-      stats: {},
-      recentCenters: [],
-      recentStudents: [],
-      recentCallbacks: [],    // NEW
-      centersByState: [],
-      error: 'Failed to load dashboard data'
-    });
-  }
-});
-
-// Update callback status
-app.post('/super-admin/callback/:id/status', ensureSuperAdmin, async (req, res) => {
-  try {
-    const { status, notes } = req.body;
-    const validStatuses = ['pending', 'called', 'completed', 'cancelled'];
-    
-    if (!validStatuses.includes(status)) {
-      return res.status(400).json({ ok: false, error: 'Invalid status' });
-    }
-
-    const updateData = { status };
-    if (notes) updateData.notes = notes;
-
-    await CallbackRequest.findByIdAndUpdate(req.params.id, updateData);
-    res.json({ ok: true, message: 'Status updated successfully' });
-  } catch (error) {
-    console.error('Status update error:', error);
-    res.status(500).json({ ok: false, error: 'Failed to update status' });
-  }
-});
-
-// Add this after your existing routes
-// Callback request route
-app.post('/api/callback-request', async (req, res) => {
-  try {
-    const { phone } = req.body;
-
-    // Validation
-    if (!phone || typeof phone !== 'string') {
-      return res.status(400).json({ 
-        ok: false, 
-        error: 'Phone number is required' 
-      });
-    }
-
-    // Clean and validate phone number
-    const cleanPhone = phone.replace(/\D/g, ''); // Remove non-digits
-    
-    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
-      return res.status(400).json({ 
-        ok: false, 
-        error: 'Please enter a valid 10-digit phone number starting with 6-9' 
-      });
-    }
-
-    // Check for duplicate request in last 24 hours
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-    const existingRequest = await CallbackRequest.findOne({
-      phone: cleanPhone,
-      createdAt: { $gte: twentyFourHoursAgo }
-    });
-
-    if (existingRequest) {
-      return res.status(400).json({ 
-        ok: false, 
-        error: 'Callback already requested for this number in the last 24 hours' 
-      });
-    }
-
-    // Create new callback request
-    const callbackRequest = new CallbackRequest({
-      phone: cleanPhone,
-      ipAddress: req.ip || req.connection.remoteAddress,
-      userAgent: req.get('User-Agent')
-    });
-
-    await callbackRequest.save();
-
-    res.json({ 
-      ok: true, 
-      message: 'Callback request submitted successfully. We will call you soon!' 
-    });
-
-  } catch (error) {
-    console.error('Callback request error:', error);
-    
-    if (error.name === 'ValidationError') {
-      const errors = Object.values(error.errors).map(e => e.message);
-      return res.status(400).json({ 
-        ok: false, 
-        error: errors.join(', ') 
-      });
-    }
-
-    res.status(500).json({ 
-      ok: false, 
-      error: 'Server error. Please try again later.' 
-    });
-  }
-});
-
 
 // Start server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server listening on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`\n🚀 Server running on http://localhost:${PORT}`);
+  console.log('📦 Session store: In-memory (server-side)');
+  console.log('🔐 Auth system: Ready');
+  console.log('✅ All routes loaded\n');
+});
