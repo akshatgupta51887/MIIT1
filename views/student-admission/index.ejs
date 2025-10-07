@@ -7,63 +7,101 @@
         <div class="card-header bg-primary border-bottom border-warning border-4">
           <div class="d-flex justify-content-between align-items-center">
             <div><h4 class="text-white m-0">Online Admission Form</h4></div>
-            <div></div>
           </div>
         </div>
         <div class="card-body">
-          <form id="registrationForm">
+          <!-- IMPORTANT: Added novalidate to prevent HTML5 validation -->
+          <form id="registrationForm" novalidate>
             <div class="row">
 
-              <div class="col-md-6 mb-3">
-                <label for="state" class="form-label">Center State</label>
-                <select class="form-select" id="state" name="state" required>
-                  <option value="">Select Center State</option>
-                  <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
-                  <option value="Andhra Pradesh">Andhra Pradesh</option>
-                  <option value="Arunachal Pradesh">Arunachal Pradesh</option>
-                  <option value="Assam">Assam</option>
-                  <option value="Bihar">Bihar</option>
-                  <option value="Chandigarh">Chandigarh</option>
-                  <option value="Chhattisgarh">Chhattisgarh</option>
-                  <option value="Dadra and Nagar Haveli and Daman & Diu">Dadra and Nagar Haveli and Daman & Diu</option>
-                  <option value="Delhi">Delhi</option>
-                  <option value="Goa">Goa</option>
-                  <option value="Gujarat">Gujarat</option>
-                  <option value="Haryana">Haryana</option>
-                  <option value="Himachal Pradesh">Himachal Pradesh</option>
-                  <option value="Jammu and Kashmir">Jammu and Kashmir</option>
-                  <option value="Jharkhand">Jharkhand</option>
-                  <option value="Karnataka">Karnataka</option>
-                  <option value="Kerala">Kerala</option>
-                  <option value="Ladakh">Ladakh</option>
-                  <option value="Lakshadweep">Lakshadweep</option>
-                  <option value="Madhya Pradesh">Madhya Pradesh</option>
-                  <option value="Maharashtra">Maharashtra</option>
-                  <option value="Manipur">Manipur</option>
-                  <option value="Meghalaya">Meghalaya</option>
-                  <option value="Mizoram">Mizoram</option>
-                  <option value="Nagaland">Nagaland</option>
-                  <option value="Odisha">Odisha</option>
-                  <option value="Puducherry">Puducherry</option>
-                  <option value="Punjab">Punjab</option>
-                  <option value="Rajasthan">Rajasthan</option>
-                  <option value="Sikkim">Sikkim</option>
-                  <option value="Tamil Nadu">Tamil Nadu</option>
-                  <option value="Telangana">Telangana</option>
-                  <option value="Tripura">Tripura</option>
-                  <option value="Uttarakhand">Uttarakhand</option>
-                  <option value="Uttar Pradesh">Uttar Pradesh</option>
-                  <option value="West Bengal">West Bengal</option>
-                </select>
-                <small class="text-danger" id="stateErr">&nbsp;</small>
+              <!-- Study Mode Selection -->
+              <div class="col-md-12 mb-4">
+                <label class="form-label fw-bold">Choose Study Mode</label>
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <div class="card border-primary h-100">
+                      <div class="card-body text-center">
+                        <input type="radio" class="btn-check" name="studyMode" id="modeOffline" value="offline" checked>
+                        <label class="btn btn-outline-primary w-100" for="modeOffline">
+                          <i class="bi bi-building fs-3 d-block mb-2"></i>
+                          <h5>Offline Mode</h5>
+                          <p class="small mb-0">Study at a Physical Center</p>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="card border-success h-100">
+                      <div class="card-body text-center">
+                        <input type="radio" class="btn-check" name="studyMode" id="modeOnline" value="online">
+                        <label class="btn btn-outline-success w-100" for="modeOnline">
+                          <i class="bi bi-laptop fs-3 d-block mb-2"></i>
+                          <h5>Online Mode</h5>
+                          <p class="small mb-0">Study from Anywhere</p>
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <div class="col-md-6 mb-3">
-                <label for="center_id" class="form-label">Select Center</label>
-                <select class="form-select" id="center_id" name="center_id" required disabled>
-                  <option value="">Select Center</option>
-                </select>
-                <small class="text-danger" id="center_idErr">&nbsp;</small>
+              <!-- Center Selection (Hidden for Online Mode) -->
+              <div id="centerSelectionSection">
+                <div class="row">
+                  <div class="col-md-6 mb-3">
+                    <label for="state" class="form-label">Center State</label>
+                    <!-- REMOVED required attribute from HTML -->
+                    <select class="form-select" id="state" name="state">
+                      <option value="">Select Center State</option>
+                      <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                      <option value="Andhra Pradesh">Andhra Pradesh</option>
+                      <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                      <option value="Assam">Assam</option>
+                      <option value="Bihar">Bihar</option>
+                      <option value="Chandigarh">Chandigarh</option>
+                      <option value="Chhattisgarh">Chhattisgarh</option>
+                      <option value="Dadra and Nagar Haveli and Daman & Diu">Dadra and Nagar Haveli and Daman & Diu</option>
+                      <option value="Delhi">Delhi</option>
+                      <option value="Goa">Goa</option>
+                      <option value="Gujarat">Gujarat</option>
+                      <option value="Haryana">Haryana</option>
+                      <option value="Himachal Pradesh">Himachal Pradesh</option>
+                      <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                      <option value="Jharkhand">Jharkhand</option>
+                      <option value="Karnataka">Karnataka</option>
+                      <option value="Kerala">Kerala</option>
+                      <option value="Ladakh">Ladakh</option>
+                      <option value="Lakshadweep">Lakshadweep</option>
+                      <option value="Madhya Pradesh">Madhya Pradesh</option>
+                      <option value="Maharashtra">Maharashtra</option>
+                      <option value="Manipur">Manipur</option>
+                      <option value="Meghalaya">Meghalaya</option>
+                      <option value="Mizoram">Mizoram</option>
+                      <option value="Nagaland">Nagaland</option>
+                      <option value="Odisha">Odisha</option>
+                      <option value="Puducherry">Puducherry</option>
+                      <option value="Punjab">Punjab</option>
+                      <option value="Rajasthan">Rajasthan</option>
+                      <option value="Sikkim">Sikkim</option>
+                      <option value="Tamil Nadu">Tamil Nadu</option>
+                      <option value="Telangana">Telangana</option>
+                      <option value="Tripura">Tripura</option>
+                      <option value="Uttarakhand">Uttarakhand</option>
+                      <option value="Uttar Pradesh">Uttar Pradesh</option>
+                      <option value="West Bengal">West Bengal</option>
+                    </select>
+                    <small class="text-danger" id="stateErr">&nbsp;</small>
+                  </div>
+
+                  <div class="col-md-6 mb-3">
+                    <label for="center_id" class="form-label">Select Center</label>
+                    <!-- REMOVED required attribute from HTML -->
+                    <select class="form-select" id="center_id" name="center_id" disabled>
+                      <option value="">Select Center</option>
+                    </select>
+                    <small class="text-danger" id="center_idErr">&nbsp;</small>
+                  </div>
+                </div>
               </div>
 
               <div class="col-md-12 mb-3">
@@ -176,7 +214,6 @@
               </div>
 
               <div class="col-md-6 offset-md-3">
-                <input type="hidden" name="onlineAd" value="1">
                 <button type="submit" class="btn btn-primary w-100" id="cntSub">
                   <i class="fa fa-rocket"></i> <span class="idvd">|</span> Submit
                 </button>
@@ -198,12 +235,16 @@
         <button type="button" class="btn btn-light" data-bs-dismiss="modal" aria-label="Close"><b>X</b></button>
       </div>
       <div class="modal-body">
-        <p>Hey, <span class="fw-bold" id="cNAME"></span> please visit center & submit below documents. </p>
-        <ul>
-          <li>AADHAR CARD, VOTER ID, PAN CARD, SCHOOL/COLLEGE ID CARD</li>
-          <li>PASSPORT SIZE PHOTO</li>
-          <li>MARKSHEET</li>
-        </ul>
+        <p>Hey, <span class="fw-bold" id="cNAME"></span>! <span id="modalMessage"></span></p>
+        
+        <div id="offlineInstructions" class="d-none">
+          <p>Please visit center & submit below documents:</p>
+          <ul>
+            <li>AADHAR CARD, VOTER ID, PAN CARD, SCHOOL/COLLEGE ID CARD</li>
+            <li>PASSPORT SIZE PHOTO</li>
+            <li>MARKSHEET</li>
+          </ul>
+        </div>
 
         <div class="table-responsive">
           <table class="table">
@@ -213,17 +254,20 @@
                 <th scope="row" class="text-secondary">: <span id="SID"></span></th>
               </tr>
               <tr>
+                <td class="nceb-heading-primary fw-bold">STUDY MODE</td>
+                <th scope="row" class="text-secondary">: <span id="SMODE"></span></th>
+              </tr>
+              <tr id="centerRow">
                 <td class="nceb-heading-primary fw-bold">CENTER NAME</td>
                 <th scope="row" class="text-secondary">: <span id="CN"></span></th>
               </tr>
-              <tr>
+              <tr id="addressRow">
                 <td class="nceb-heading-primary fw-bold">CENTER ADDRESS</td>
                 <th scope="row" class="text-secondary">: <span id="CA"></span></th>
               </tr>
             </tbody>
           </table>
         </div>
-
       </div>
     </div>
   </div>
@@ -233,6 +277,9 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Get form elements
   const form = document.getElementById('registrationForm');
+  const modeOnlineRadio = document.getElementById('modeOnline');
+  const modeOfflineRadio = document.getElementById('modeOffline');
+  const centerSection = document.getElementById('centerSelectionSection');
   const stateEl = document.getElementById('state');
   const centerEl = document.getElementById('center_id');
   const courseEl = document.getElementById('course_id');
@@ -245,10 +292,45 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Track form state
   let formState = {
+    studyMode: 'offline',
     stateSelected: false,
     centersLoaded: false,
     coursesLoaded: false
   };
+
+  // Study mode change handler
+  function handleStudyModeChange() {
+    const isOnline = modeOnlineRadio.checked;
+    formState.studyMode = isOnline ? 'online' : 'offline';
+    
+    console.log('Study mode changed to:', formState.studyMode);
+
+    if (isOnline) {
+      // Hide center selection for online mode
+      centerSection.style.display = 'none';
+      
+      // Reset center fields and state
+      stateEl.value = '';
+      centerEl.value = '';
+      centerEl.innerHTML = '<option value="">Select Center</option>';
+      formState.stateSelected = false;
+      formState.centersLoaded = false;
+      
+      // Load courses directly for online mode
+      loadCourses();
+    } else {
+      // Show center selection for offline mode
+      centerSection.style.display = 'block';
+      
+      // Reset course dropdown
+      courseEl.innerHTML = '<option value="">Select Course</option>';
+      courseEl.disabled = true;
+      formState.coursesLoaded = false;
+    }
+  }
+
+  modeOnlineRadio.addEventListener('change', handleStudyModeChange);
+  modeOfflineRadio.addEventListener('change', handleStudyModeChange);
 
   // Helper function to fetch JSON
   async function fetchJSON(url) {
@@ -266,6 +348,31 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
+  // Load courses function
+  async function loadCourses() {
+    try {
+      courseEl.innerHTML = '<option value="">Loading courses...</option>';
+      const courseData = await fetchJSON('/api/courses');
+      
+      if (courseData.ok) {
+        courseEl.innerHTML = '<option value="">Select Course</option>';
+        (courseData.courses || []).forEach(c => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.title;
+          courseEl.appendChild(opt);
+        });
+        courseEl.disabled = false;
+        formState.coursesLoaded = true;
+        console.log('Loaded courses:', courseData.courses.length);
+      }
+    } catch (e) {
+      console.error('Error loading courses:', e);
+      courseEl.innerHTML = '<option value="">Error loading courses</option>';
+      alert('Failed to load courses. Please try again.');
+    }
+  }
+
   // Clear error messages
   function clearErrors() {
     document.querySelectorAll('.text-danger').forEach(el => el.innerHTML = '&nbsp;');
@@ -280,17 +387,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   }
 
-  // State change handler
+  // State change handler (only for offline mode)
   stateEl.addEventListener('change', async function() {
+    // CRITICAL: Skip if in online mode
+    if (formState.studyMode === 'online') {
+      console.log('🚫 Skipping state change - in online mode');
+      return;
+    }
+
     const selectedState = stateEl.value;
     console.log('State changed to:', selectedState);
     
-    // Reset form state
     formState.stateSelected = !!selectedState;
     formState.centersLoaded = false;
     formState.coursesLoaded = false;
     
-    // Reset dependent fields
     centerEl.innerHTML = '<option value="">Select Center</option>';
     centerEl.disabled = true;
     courseEl.innerHTML = '<option value="">Select Course</option>';
@@ -303,7 +414,6 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     try {
-      // Show loading state
       centerEl.innerHTML = '<option value="">Loading centers...</option>';
       
       const data = await fetchJSON(`/api/centers/by-state?state=${encodeURIComponent(selectedState)}`);
@@ -322,7 +432,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
       }
 
-      // Populate centers
       centerEl.innerHTML = '<option value="">Select Center</option>';
       centers.forEach(c => {
         const opt = document.createElement('option');
@@ -336,21 +445,7 @@ document.addEventListener('DOMContentLoaded', function() {
       formState.centersLoaded = true;
 
       // Load courses
-      courseEl.innerHTML = '<option value="">Loading courses...</option>';
-      const courseData = await fetchJSON('/api/courses');
-      
-      if (courseData.ok) {
-        courseEl.innerHTML = '<option value="">Select Course</option>';
-        (courseData.courses || []).forEach(c => {
-          const opt = document.createElement('option');
-          opt.value = c.id;
-          opt.textContent = c.title;
-          courseEl.appendChild(opt);
-        });
-        courseEl.disabled = false;
-        formState.coursesLoaded = true;
-        console.log('Loaded courses:', courseData.courses.length);
-      }
+      await loadCourses();
     } catch (e) {
       console.error('Error in state change:', e);
       centerEl.innerHTML = '<option value="">Error loading centers</option>';
@@ -392,11 +487,9 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Form submitted');
     clearErrors();
 
-    // Get all form values using FormData for reliability
     const formData = new FormData(form);
     const payload = {};
     
-    // Convert FormData to regular object
     for (let [key, value] of formData.entries()) {
       payload[key] = typeof value === 'string' ? value.trim() : value;
     }
@@ -404,18 +497,19 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Form payload:', payload);
     console.log('Form state:', formState);
 
-    // Enhanced validation with better error messages
     let hasErrors = false;
 
-    // Check form readiness
-    if (!formState.stateSelected || !payload.state) {
-      showError('state', 'Please select a state');
-      hasErrors = true;
-    }
-    
-    if (!formState.centersLoaded || !payload.center_id) {
-      showError('center_id', 'Please select a center');
-      hasErrors = true;
+    // Validate based on study mode
+    if (formState.studyMode === 'offline') {
+      if (!formState.stateSelected || !payload.state) {
+        showError('state', 'Please select a state');
+        hasErrors = true;
+      }
+      
+      if (!formState.centersLoaded || !payload.center_id) {
+        showError('center_id', 'Please select a center');
+        hasErrors = true;
+      }
     }
     
     if (!formState.coursesLoaded || !payload.course_id) {
@@ -479,15 +573,13 @@ document.addEventListener('DOMContentLoaded', function() {
       return;
     }
 
-    // Disable submit button
     const submitBtn = document.getElementById('cntSub');
     const originalHTML = submitBtn.innerHTML;
     submitBtn.disabled = true;
     submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
 
     try {
-    //   console.log('Sending request to /api/student-admission');
-        console.log(payload);
+      console.log('Sending request to /api/student-admission');
       const res = await fetch('/api/student-admission', {
         method: 'POST',
         headers: { 
@@ -507,16 +599,26 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Success - show modal
       document.getElementById('cNAME').textContent = payload.student_name;
-      document.getElementById('CN').textContent = data.center?.inst || '';
-      document.getElementById('CA').textContent = data.center?.cenAdr || '';
       document.getElementById('SID').textContent = data.studentId || '';
+      document.getElementById('SMODE').textContent = formState.studyMode === 'online' ? 'Online' : 'Offline (Physical Center)';
+      
+      if (formState.studyMode === 'online') {
+        document.getElementById('modalMessage').textContent = 'You have enrolled for online classes. You will receive course materials and instructions via email.';
+        document.getElementById('offlineInstructions').classList.add('d-none');
+        document.getElementById('CN').textContent = 'Online';
+        document.getElementById('CA').textContent = 'N/A';
+      } else {
+        document.getElementById('modalMessage').textContent = 'Your admission is confirmed!';
+        document.getElementById('offlineInstructions').classList.remove('d-none');
+        document.getElementById('CN').textContent = data.center?.inst || '';
+        document.getElementById('CA').textContent = data.center?.cenAdr || '';
+      }
       
       const successModal = new bootstrap.Modal(document.getElementById('successModal'));
       successModal.show();
 
       console.log('Admission successful, redirecting to dashboard in 3 seconds');
       
-      // Redirect to dashboard after 3 seconds
       setTimeout(() => {
         window.location.href = '/student-dashboard';
       }, 3000);
@@ -525,7 +627,6 @@ document.addEventListener('DOMContentLoaded', function() {
       console.error('Submission error:', err);
       alert('Error: ' + (err.message || 'Server error. Please try again.'));
     } finally {
-      // Re-enable submit button
       submitBtn.disabled = false;
       submitBtn.innerHTML = originalHTML;
     }

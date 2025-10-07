@@ -347,6 +347,9 @@ app.get('/api/centers/by-state', async (req, res) => {
     return res.status(500).json({ ok: false, error: 'Server error' });
   }
 });
+app.get('/skills-test', (req, res) => {
+  res.render('miit-skills-test');
+});
 
 app.get('/api/courses', (req, res) => {
   res.json({ ok: true, courses: COURSES });
@@ -359,28 +362,43 @@ app.get('/api/courses/:id', (req, res) => {
 });
 
 // Student admission API
+// Student admission API - UPDATED for online/offline mode
 app.post('/api/student-admission', async (req, res) => {
   try {
     const {
+      studyMode, // NEW: online or offline
       state, center_id, course_id,
       student_name, s_rel, father_name,
       s_gender, dob, s_phone, qualification, s_address,
       email, password
     } = req.body || {};
 
-    console.log('📝 Admission request:', { state, center_id, course_id, student_name, email });
+    console.log('📝 Admission request:', {
+      studyMode,
+      state, center_id, course_id, student_name, email
+    });
 
-    // Validations
-    if (!state) return res.status(400).json({ ok: false, error: 'State is required' });
-    if (!center_id) return res.status(400).json({ ok: false, error: 'Center is required' });
+    // Basic validations - FIXED: Check studyMode first
+    const mode = studyMode || 'offline';
+    
+    // FIXED: For offline mode, center is required
+    if (mode === 'offline') {
+      if (!state) return res.status(400).json({ ok: false, error: 'State is required for offline mode' });
+      if (!center_id) return res.status(400).json({ ok: false, error: 'Center is required for offline mode' });
+    }
+    
     if (!course_id) return res.status(400).json({ ok: false, error: 'Course is required' });
     if (!student_name || !s_rel || !father_name || !s_gender || !dob || !s_phone || !qualification || !s_address) {
       return res.status(400).json({ ok: false, error: 'All student fields are required' });
     }
     if (!email || !password) return res.status(400).json({ ok: false, error: 'Email and password are required' });
 
-    const center = await Center.findOne({ _id: center_id, status: 'approved' }).lean();
-    if (!center) return res.status(400).json({ ok: false, error: 'Invalid or unapproved center' });
+    // Validate center for offline mode only
+    let center = null;
+    if (mode === 'offline') {
+      center = await Center.findOne({ _id: center_id, status: 'approved' }).lean();
+      if (!center) return res.status(400).json({ ok: false, error: 'Invalid or unapproved center' });
+    }
 
     const course = COURSES.find(c => c.id === course_id);
     if (!course) return res.status(400).json({ ok: false, error: 'Invalid course' });
@@ -392,14 +410,9 @@ app.post('/api/student-admission', async (req, res) => {
     const exists = await Student.findOne({ 'auth.email': email.toLowerCase().trim() });
     if (exists) return res.status(400).json({ ok: false, error: 'Email already registered' });
 
+    // Build student data based on mode
     const studentData = {
-      center: {
-        _id: center._id,
-        inst: center.inst || '',
-        cenAdr: center.cenAdr || '',
-        state: center.state || '',
-        phone: center.phone || ''
-      },
+      studyMode: mode, // Add study mode
       course: {
         id: course.id,
         title: course.title,
@@ -423,6 +436,27 @@ app.post('/api/student-admission', async (req, res) => {
       }
     };
 
+    // Set center data based on mode
+    if (mode === 'online') {
+      // For online students - no physical center
+      studentData.center = {
+        _id: null,
+        inst: 'Online',
+        cenAdr: 'N/A',
+        state: 'N/A',
+        phone: 'N/A'
+      };
+    } else {
+      // For offline students - use selected center
+      studentData.center = {
+        _id: center._id,
+        inst: center.inst || '',
+        cenAdr: center.cenAdr || '',
+        state: center.state || '',
+        phone: center.phone || ''
+      };
+    }
+
     const st = new Student(studentData);
     await st.setPassword(password);
     await st.save();
@@ -434,7 +468,10 @@ app.post('/api/student-admission', async (req, res) => {
       ok: true,
       message: 'Admission successful.',
       studentId: st.studentId,
-      center: { inst: center.inst || '', cenAdr: center.cenAdr || '' }
+      studyMode: mode,
+      center: mode === 'online' 
+        ? { inst: 'Online', cenAdr: 'N/A' } 
+        : { inst: center.inst || '', cenAdr: center.cenAdr || '' }
     });
 
   } catch (e) {
@@ -458,6 +495,7 @@ app.post('/api/student-admission', async (req, res) => {
     return res.status(500).json({ ok: false, error: 'Server error during admission' });
   }
 });
+
 
 // Multer setup for file uploads
 const uploadsDir = path.join(__dirname, 'uploads');

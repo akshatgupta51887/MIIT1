@@ -1,0 +1,1471 @@
+<%- include('./partials/header') %>
+
+<div class="container mt-2" id="appContainer">
+  <!-- Main Dashboard -->
+  <div id="testDashboard" class="dashboard">
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow border-0">
+          <div class="card-header bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <h3 class="mb-0"><i class="bi bi-clipboard-check"></i> MIIT Skills Assessment Tests</h3>
+              <button class="btn btn-outline-light" id="viewResultsBtn">
+                <i class="bi bi-bar-chart"></i> View Results
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row g-4">
+              <!-- MS Excel Test -->
+              <div class="col-md-6">
+                <div class="card h-100 border-success test-card" data-test="excel">
+                  <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-earmark-excel"></i> MS Excel Test</h5>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text">Test your Microsoft Excel skills including formulas, functions, pivot tables, and data analysis.</p>
+                    <div class="test-info">
+                      <small class="text-muted">
+                        <i class="bi bi-clock"></i> 30 Questions • 22.5 Minutes<br>
+                        <i class="bi bi-star-fill"></i> Difficulty: Intermediate
+                      </small>
+                    </div>
+                    <div class="test-status mt-3" id="excel-status">
+                      <button class="btn btn-success btn-lg w-100 test-btn" data-action="start">
+                        <i class="bi bi-play-fill"></i> Start Test
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- MS Word Test -->
+              <div class="col-md-6">
+                <div class="card h-100 border-primary test-card" data-test="word">
+                  <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0"><i class="bi bi-file-earmark-word"></i> MS Word Test</h5>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text">Evaluate your Microsoft Word proficiency in document formatting, styles, and advanced features.</p>
+                    <div class="test-info">
+                      <small class="text-muted">
+                        <i class="bi bi-clock"></i> 30 Questions • 22.5 Minutes<br>
+                        <i class="bi bi-star-fill"></i> Difficulty: Basic
+                      </small>
+                    </div>
+                    <div class="test-status mt-3" id="word-status">
+                      <button class="btn btn-primary btn-lg w-100 test-btn" data-action="start">
+                        <i class="bi bi-play-fill"></i> Start Test
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Tally ERP Test -->
+              <div class="col-md-6">
+                <div class="card h-100 border-warning test-card" data-test="tally">
+                  <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0"><i class="bi bi-calculator"></i> Tally ERP Test</h5>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text">Assess your Tally ERP knowledge including accounting, inventory management, and GST compliance.</p>
+                    <div class="test-info">
+                      <small class="text-muted">
+                        <i class="bi bi-clock"></i> 30 Questions • 22.5 Minutes<br>
+                        <i class="bi bi-star-fill"></i> Difficulty: Advanced
+                      </small>
+                    </div>
+                    <div class="test-status mt-3" id="tally-status">
+                      <button class="btn btn-warning btn-lg w-100 test-btn" data-action="start">
+                        <i class="bi bi-play-fill"></i> Start Test
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Basic Computer & Web Dev Test -->
+              <div class="col-md-6">
+                <div class="card h-100 border-info test-card" data-test="webdev">
+                  <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="bi bi-code-slash"></i> Basic Computer & Web Development</h5>
+                  </div>
+                  <div class="card-body">
+                    <p class="card-text">Test your fundamental computer skills and basic web development knowledge including HTML, CSS.</p>
+                    <div class="test-info">
+                      <small class="text-muted">
+                        <i class="bi bi-clock"></i> 30 Questions • 22.5 Minutes<br>
+                        <i class="bi bi-star-fill"></i> Difficulty: Intermediate
+                      </small>
+                    </div>
+                    <div class="test-status mt-3" id="webdev-status">
+                      <button class="btn btn-info btn-lg w-100 test-btn" data-action="start">
+                        <i class="bi bi-play-fill"></i> Start Test
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Test Interface -->
+  <div id="testInterface" class="test-interface d-none">
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow border-0">
+          <div class="card-header bg-dark text-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h4 class="mb-0" id="testTitle">Test in Progress</h4>
+                <small id="testProgress">Question 1 of 30</small>
+              </div>
+              <div class="text-end">
+                <div class="mb-1">
+                  <span class="badge bg-warning" id="timeRemaining">00:45</span>
+                </div>
+                <small class="text-muted">Time Remaining</small>
+              </div>
+            </div>
+          </div>
+          <div class="card-body p-4">
+            <div class="question-container">
+              <div class="question-header mb-4">
+                <h5 id="questionText" class="fw-bold">Question will appear here...</h5>
+              </div>
+              <div class="options-container">
+                <div class="row g-3" id="optionsContainer">
+                  <!-- Options will be generated here -->
+                </div>
+              </div>
+              <div class="question-actions mt-4 text-center">
+                <button class="btn btn-outline-secondary me-2" id="skipBtn">
+                  <i class="bi bi-skip-forward"></i> Skip Question
+                </button>
+                <button class="btn btn-primary" id="nextBtn" disabled>
+                  Next Question <i class="bi bi-arrow-right"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Results View -->
+  <div id="resultsView" class="results-view d-none">
+    <div class="row">
+      <div class="col-12">
+        <div class="card shadow border-0">
+          <div class="card-header bg-info text-white">
+            <div class="d-flex justify-content-between align-items-center">
+              <h3 class="mb-0"><i class="bi bi-trophy"></i> Test Results Dashboard</h3>
+              <button class="btn btn-outline-light" id="backToDashboard">
+                <i class="bi bi-arrow-left"></i> Back to Tests
+              </button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="resultsContainer">
+              <!-- Results will be populated here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+.test-card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+}
+
+.test-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+}
+
+.test-interface .question-container {
+  min-height: 400px;
+}
+
+.option-card {
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: 2px solid #e9ecef;
+}
+
+.option-card:hover {
+  border-color: #007bff;
+  transform: translateY(-2px);
+}
+
+.option-card.selected {
+  border-color: #007bff;
+  background-color: #e3f2fd;
+}
+
+.progress-circle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.score-card {
+  border-left: 4px solid;
+}
+
+.score-excellent { border-left-color: #28a745; }
+.score-good { border-left-color: #17a2b8; }
+.score-average { border-left-color: #ffc107; }
+.score-poor { border-left-color: #dc3545; }
+
+.test-info small {
+  display: block;
+  line-height: 1.6;
+}
+
+.question-header {
+  border-bottom: 2px solid #f8f9fa;
+  padding-bottom: 1rem;
+}
+
+.timer-warning {
+  animation: pulse 1s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.results-summary {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 15px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+@media (max-width: 768px) {
+  .test-card {
+    margin-bottom: 1rem;
+  }
+  
+  .question-container {
+    padding: 1rem 0;
+  }
+}
+</style>
+
+<script>
+class MIITTestSystem {
+  constructor() {
+    this.currentTest = null;
+    this.currentQuestionIndex = 0;
+    this.timeRemaining = 45;
+    this.timer = null;
+    this.selectedAnswer = null;
+    this.testResults = {};
+    
+    this.questions = {
+      excel: [
+        // MS Excel Questions (30)
+        {
+          question: "Which function is used to find the maximum value in a range of cells?",
+          options: ["MAX()", "MAXIMUM()", "LARGE()", "TOP()"],
+          correct: 0
+        },
+        {
+          question: "What does the VLOOKUP function do?",
+          options: ["Searches vertically in a table", "Validates data entry", "Creates vertical charts", "Sorts data vertically"],
+          correct: 0
+        },
+        {
+          question: "Which key combination is used to select the entire worksheet?",
+          options: ["Ctrl+A", "Ctrl+Shift+A", "Alt+A", "Shift+A"],
+          correct: 0
+        },
+        {
+          question: "What is the default file extension for Excel 2019?",
+          options: [".xls", ".xlsx", ".xlsm", ".csv"],
+          correct: 1
+        },
+        {
+          question: "Which function counts non-empty cells in a range?",
+          options: ["COUNT()", "COUNTA()", "COUNTIF()", "COUNTNUMBER()"],
+          correct: 1
+        },
+        {
+          question: "What does Ctrl+Z do in Excel?",
+          options: ["Redo", "Undo", "Save", "Cut"],
+          correct: 1
+        },
+        {
+          question: "Which chart type is best for showing trends over time?",
+          options: ["Pie Chart", "Bar Chart", "Line Chart", "Doughnut Chart"],
+          correct: 2
+        },
+        {
+          question: "What is the purpose of absolute referencing ($A$1)?",
+          options: ["Make cell reference fixed", "Add currency symbol", "Create absolute value", "Lock the worksheet"],
+          correct: 0
+        },
+        {
+          question: "Which function is used to concatenate text in Excel?",
+          options: ["JOIN()", "CONCAT()", "MERGE()", "COMBINE()"],
+          correct: 1
+        },
+        {
+          question: "What does PMT function calculate?",
+          options: ["Payment for loan", "Profit margin total", "Project management time", "Performance metric total"],
+          correct: 0
+        },
+        {
+          question: "Which Excel feature allows you to summarize large datasets?",
+          options: ["Data Tables", "Pivot Tables", "Smart Tables", "Summary Tables"],
+          correct: 1
+        },
+        {
+          question: "What is the shortcut to insert a new row?",
+          options: ["Ctrl+R", "Ctrl+Shift+Plus", "Alt+R", "Ctrl+I"],
+          correct: 1
+        },
+        {
+          question: "Which function returns the current date and time?",
+          options: ["TODAY()", "NOW()", "DATE()", "TIME()"],
+          correct: 1
+        },
+        {
+          question: "What does the IF function do?",
+          options: ["Creates conditions", "Formats cells", "Imports data", "Filters data"],
+          correct: 0
+        },
+        {
+          question: "Which key is used to edit a cell directly?",
+          options: ["F1", "F2", "F3", "F4"],
+          correct: 1
+        },
+        {
+          question: "What is the maximum number of rows in Excel 2019?",
+          options: ["65,536", "1,048,576", "16,384", "1,000,000"],
+          correct: 1
+        },
+        {
+          question: "Which function is used to round numbers?",
+          options: ["ROUND()", "APPROXIMATE()", "NEAREST()", "DECIMAL()"],
+          correct: 0
+        },
+        {
+          question: "What does Ctrl+C do?",
+          options: ["Cut", "Copy", "Close", "Clear"],
+          correct: 1
+        },
+        {
+          question: "Which option protects a worksheet?",
+          options: ["Review > Protect Sheet", "File > Protect", "Home > Protection", "Data > Protect"],
+          correct: 0
+        },
+        {
+          question: "What is the purpose of SUMIF function?",
+          options: ["Sum with conditions", "Sum integers only", "Sum formulas", "Sum and multiply"],
+          correct: 0
+        },
+        {
+          question: "Which feature helps remove duplicate data?",
+          options: ["Data > Remove Duplicates", "Home > Delete Duplicates", "Review > Clean Data", "File > Remove Copies"],
+          correct: 0
+        },
+        {
+          question: "What does the AVERAGE function calculate?",
+          options: ["Mean value", "Median value", "Mode value", "Range value"],
+          correct: 0
+        },
+        {
+          question: "Which key combination saves the file?",
+          options: ["Ctrl+S", "Alt+S", "Shift+S", "F12"],
+          correct: 0
+        },
+        {
+          question: "What is conditional formatting?",
+          options: ["Format based on cell values", "Format only text", "Format numbers only", "Format charts only"],
+          correct: 0
+        },
+        {
+          question: "Which function finds the position of text within a string?",
+          options: ["LOCATE()", "FIND()", "SEARCH()", "POSITION()"],
+          correct: 1
+        },
+        {
+          question: "What does the TRIM function do?",
+          options: ["Removes spaces", "Cuts text", "Deletes rows", "Clears formatting"],
+          correct: 0
+        },
+        {
+          question: "Which view shows page breaks?",
+          options: ["Normal View", "Page Break Preview", "Page Layout", "Draft View"],
+          correct: 1
+        },
+        {
+          question: "What is the use of Goal Seek?",
+          options: ["Find input value for desired result", "Set goals for projects", "Seek specific data", "Search for errors"],
+          correct: 0
+        },
+        {
+          question: "Which function converts text to uppercase?",
+          options: ["UPPER()", "CAPS()", "CAPITAL()", "BIG()"],
+          correct: 0
+        },
+        {
+          question: "What does Ctrl+F do in Excel?",
+          options: ["Format cells", "Find and replace", "Create formula", "Filter data"],
+          correct: 1
+        }
+      ],
+      
+      word: [
+        // MS Word Questions (30)
+        {
+          question: "Which key combination is used to bold text in MS Word?",
+          options: ["Ctrl+B", "Ctrl+I", "Ctrl+U", "Alt+B"],
+          correct: 0
+        },
+        {
+          question: "What is the default font in MS Word 2019?",
+          options: ["Times New Roman", "Arial", "Calibri", "Cambria"],
+          correct: 2
+        },
+        {
+          question: "Which option creates a bulleted list?",
+          options: ["Home > Bullets", "Insert > List", "Format > Bullets", "Layout > List"],
+          correct: 0
+        },
+        {
+          question: "What does Ctrl+A select in Word?",
+          options: ["A paragraph", "A sentence", "Entire document", "A word"],
+          correct: 2
+        },
+        {
+          question: "Which view is best for reading documents?",
+          options: ["Print Layout", "Web Layout", "Reading View", "Draft"],
+          correct: 2
+        },
+        {
+          question: "What is the purpose of headers and footers?",
+          options: ["Add page numbers and titles", "Format text", "Insert images", "Create tables"],
+          correct: 0
+        },
+        {
+          question: "Which key opens Find and Replace dialog?",
+          options: ["Ctrl+F", "Ctrl+H", "Ctrl+R", "F3"],
+          correct: 1
+        },
+        {
+          question: "What does Ctrl+S do?",
+          options: ["Save document", "Select all", "Show formatting", "Spell check"],
+          correct: 0
+        },
+        {
+          question: "Which tab contains spelling and grammar check?",
+          options: ["Home", "Insert", "Review", "View"],
+          correct: 2
+        },
+        {
+          question: "What is the default page orientation?",
+          options: ["Landscape", "Portrait", "Square", "Custom"],
+          correct: 1
+        },
+        {
+          question: "Which feature automatically corrects common typing errors?",
+          options: ["AutoCorrect", "AutoText", "AutoFormat", "AutoComplete"],
+          correct: 0
+        },
+        {
+          question: "What does Ctrl+Z do?",
+          options: ["Redo", "Undo", "Zoom", "Cut"],
+          correct: 1
+        },
+        {
+          question: "Which option inserts page numbers?",
+          options: ["Insert > Page Number", "Home > Page Number", "Layout > Numbers", "View > Page Number"],
+          correct: 0
+        },
+        {
+          question: "What is the purpose of styles in Word?",
+          options: ["Consistent formatting", "Add colors", "Insert images", "Create tables"],
+          correct: 0
+        },
+        {
+          question: "Which key combination creates a line break?",
+          options: ["Enter", "Shift+Enter", "Ctrl+Enter", "Alt+Enter"],
+          correct: 1
+        },
+        {
+          question: "What does the ruler help with?",
+          options: ["Measure text length", "Set margins and tabs", "Draw lines", "Create borders"],
+          correct: 1
+        },
+        {
+          question: "Which option creates a table of contents?",
+          options: ["References > Table of Contents", "Insert > TOC", "Home > Contents", "Layout > TOC"],
+          correct: 0
+        },
+        {
+          question: "What is mail merge used for?",
+          options: ["Merge documents", "Send bulk emails", "Combine paragraphs", "Mix fonts"],
+          correct: 1
+        },
+        {
+          question: "Which key combination prints the document?",
+          options: ["Ctrl+P", "Alt+P", "F5", "Ctrl+Shift+P"],
+          correct: 0
+        },
+        {
+          question: "What does double-clicking on a word do?",
+          options: ["Deletes the word", "Selects the word", "Bolds the word", "Copies the word"],
+          correct: 1
+        },
+        {
+          question: "Which option changes text color?",
+          options: ["Home > Font Color", "Insert > Color", "Format > Text Color", "Design > Colors"],
+          correct: 0
+        },
+        {
+          question: "What is the purpose of page breaks?",
+          options: ["Start new page", "Break paragraphs", "Split words", "End document"],
+          correct: 0
+        },
+        {
+          question: "Which feature tracks changes made to document?",
+          options: ["Track Changes", "Version Control", "Change Monitor", "Edit History"],
+          correct: 0
+        },
+        {
+          question: "What does Ctrl+C do?",
+          options: ["Cut", "Copy", "Close", "Create"],
+          correct: 1
+        },
+        {
+          question: "Which option aligns text to center?",
+          options: ["Home > Center", "Layout > Center", "Insert > Align Center", "Format > Center"],
+          correct: 0
+        },
+        {
+          question: "What is a section break used for?",
+          options: ["Different formatting in parts", "Break sentences", "Create spaces", "End document"],
+          correct: 0
+        },
+        {
+          question: "Which tab contains page setup options?",
+          options: ["Home", "Insert", "Layout", "View"],
+          correct: 2
+        },
+        {
+          question: "What does F7 key do in Word?",
+          options: ["Save document", "Spell check", "Print preview", "Find text"],
+          correct: 1
+        },
+        {
+          question: "Which option creates hyperlinks?",
+          options: ["Insert > Hyperlink", "Home > Link", "References > Hyperlink", "Format > Link"],
+          correct: 0
+        },
+        {
+          question: "What is the purpose of comments in Word?",
+          options: ["Add notes without changing text", "Format text", "Create bookmarks", "Insert images"],
+          correct: 0
+        }
+      ],
+      
+      tally: [
+        // Tally ERP Questions (30) 
+        {
+          question: "What is the full form of ERP?",
+          options: ["Enterprise Resource Planning", "Electronic Resource Planning", "Enterprise Report Planning", "Economic Resource Planning"],
+          correct: 0
+        },
+        {
+          question: "Which key is used to create a company in Tally?",
+          options: ["Alt+F1", "Alt+F2", "Alt+F3", "Ctrl+F3"],
+          correct: 2
+        },
+        {
+          question: "What is the shortcut to create a voucher in Tally?",
+          options: ["F9", "F7", "F8", "F5"],
+          correct: 0
+        },
+        {
+          question: "GST stands for?",
+          options: ["Goods and Services Tax", "General Sales Tax", "Government Service Tax", "Gross Sales Tax"],
+          correct: 0
+        },
+        {
+          question: "Which voucher type is used for cash sales?",
+          options: ["Payment", "Receipt", "Sales", "Journal"],
+          correct: 2
+        },
+        {
+          question: "What is the latest version of Tally?",
+          options: ["Tally.ERP 9", "TallyPrime", "Tally 7.2", "Tally Gold"],
+          correct: 1
+        },
+        {
+          question: "Which key is used to delete a company in Tally?",
+          options: ["Alt+F4", "Alt+F3", "Delete", "Ctrl+D"],
+          correct: 1
+        },
+        {
+          question: "What does P&L account show?",
+          options: ["Assets and Liabilities", "Profit and Loss", "Cash Flow", "Balance Sheet"],
+          correct: 1
+        },
+        {
+          question: "Which option is used to backup data in Tally?",
+          options: ["F1", "Alt+F3", "F11", "Ctrl+S"],
+          correct: 1
+        },
+        {
+          question: "What is the purpose of ledger in Tally?",
+          options: ["Record transactions", "Create reports", "Backup data", "Print vouchers"],
+          correct: 0
+        },
+        {
+          question: "Which voucher is used for bank transactions?",
+          options: ["Contra", "Journal", "Sales", "Purchase"],
+          correct: 0
+        },
+        {
+          question: "What does TDS stand for?",
+          options: ["Tax Deducted at Source", "Total Deduction System", "Tax Declaration Statement", "Time Deposit Scheme"],
+          correct: 0
+        },
+        {
+          question: "Which key opens calculator in Tally?",
+          options: ["Ctrl+N", "Ctrl+M", "Alt+C", "F12"],
+          correct: 1
+        },
+        {
+          question: "What is the use of cost centers in Tally?",
+          options: ["Track expenses by department", "Calculate costs", "Set prices", "Manage inventory"],
+          correct: 0
+        },
+        {
+          question: "Which report shows company's financial position?",
+          options: ["P&L Account", "Balance Sheet", "Cash Flow", "Trial Balance"],
+          correct: 1
+        },
+        {
+          question: "What is stock group used for?",
+          options: ["Categorize inventory items", "Calculate stock value", "Set reorder levels", "Track movements"],
+          correct: 0
+        },
+        {
+          question: "Which key is used to modify entries in Tally?",
+          options: ["F1", "F2", "Enter", "Alt+F2"],
+          correct: 1
+        },
+        {
+          question: "What does CGST stand for?",
+          options: ["Central Goods and Services Tax", "Common GST", "Corporate GST", "Computed GST"],
+          correct: 0
+        },
+        {
+          question: "Which voucher records purchases?",
+          options: ["Purchase voucher", "Payment voucher", "Receipt voucher", "Journal voucher"],
+          correct: 0
+        },
+        {
+          question: "What is the purpose of godowns in Tally?",
+          options: ["Store locations for inventory", "Backup locations", "Report storage", "User groups"],
+          correct: 0
+        },
+        {
+          question: "Which key quits Tally?",
+          options: ["Esc", "Alt+F4", "Ctrl+Q", "F10"],
+          correct: 1
+        },
+        {
+          question: "What is journal voucher used for?",
+          options: ["Non-cash transactions", "Cash receipts", "Bank payments", "Stock movements"],
+          correct: 0
+        },
+        {
+          question: "Which option shows all vouchers?",
+          options: ["Display > Vouchers", "Gateway > Display > Vouchers", "Reports > Vouchers", "Accounts > Vouchers"],
+          correct: 1
+        },
+        {
+          question: "What does IGST apply to?",
+          options: ["Interstate transactions", "International trade", "Industrial goods", "Import duties"],
+          correct: 0
+        },
+        {
+          question: "Which key is used for company features?",
+          options: ["F11", "F12", "Alt+F1", "Ctrl+F1"],
+          correct: 0
+        },
+        {
+          question: "What is budgets used for in Tally?",
+          options: ["Financial planning", "Cost calculation", "Price setting", "Stock valuation"],
+          correct: 0
+        },
+        {
+          question: "Which voucher type records salary payments?",
+          options: ["Payment", "Journal", "Salary", "Expense"],
+          correct: 0
+        },
+        {
+          question: "What does aging analysis show?",
+          options: ["Outstanding receivables/payables", "Product age", "Employee tenure", "Asset depreciation"],
+          correct: 0
+        },
+        {
+          question: "Which key opens day book?",
+          options: ["F4", "F5", "F6", "F7"],
+          correct: 0
+        },
+        {
+          question: "What is the use of price lists in Tally?",
+          options: ["Set different prices for items", "List all prices", "Compare prices", "Calculate margins"],
+          correct: 0
+        }
+      ],
+      
+      webdev: [
+        // Basic Computer & Web Development Questions (30)
+        {
+          question: "What does HTML stand for?",
+          options: ["Hyper Text Markup Language", "Home Tool Markup Language", "Hyperlinks Text Mark Language", "Hyperlinking Text Marking Language"],
+          correct: 0
+        },
+        {
+          question: "Which tag is used to create a hyperlink in HTML?",
+          options: ["<link>", "<a>", "<href>", "<url>"],
+          correct: 1
+        },
+        {
+          question: "What does CSS stand for?",
+          options: ["Cascading Style Sheets", "Computer Style Sheets", "Creative Style Sheets", "Colorful Style Sheets"],
+          correct: 0
+        },
+        {
+          question: "Which HTML tag is used for the largest heading?",
+          options: ["<h6>", "<h1>", "<heading>", "<head>"],
+          correct: 1
+        },
+        {
+          question: "What is the correct syntax for creating a function in JavaScript?",
+          options: ["function = myFunction() {}", "function myFunction() {}", "create myFunction() {}", "def myFunction() {}"],
+          correct: 1
+        },
+        {
+          question: "Which of the following is the brain of the computer?",
+          options: ["RAM", "Hard Disk", "CPU", "Monitor"],
+          correct: 2
+        },
+        {
+          question: "What does RAM stand for?",
+          options: ["Read Access Memory", "Random Access Memory", "Rapid Access Memory", "Real Access Memory"],
+          correct: 1
+        },
+        {
+          question: "Which CSS property is used to change text color?",
+          options: ["color", "text-color", "font-color", "text-style"],
+          correct: 0
+        },
+        {
+          question: "What is the full form of URL?",
+          options: ["Universal Resource Locator", "Uniform Resource Locator", "Universal Reference Link", "Uniform Reference Link"],
+          correct: 1
+        },
+        {
+          question: "Which HTML tag is used to display images?",
+          options: ["<image>", "<img>", "<pic>", "<photo>"],
+          correct: 1
+        },
+        {
+          question: "What does WWW stand for?",
+          options: ["World Wide Web", "World Wide Work", "World Wide Wait", "World Wide Watch"],
+          correct: 0
+        },
+        {
+          question: "Which key combination is used to copy text?",
+          options: ["Ctrl+C", "Ctrl+V", "Ctrl+X", "Ctrl+Z"],
+          correct: 0
+        },
+        {
+          question: "What is the main function of an operating system?",
+          options: ["Run applications", "Manage hardware and software", "Browse internet", "Edit documents"],
+          correct: 1
+        },
+        {
+          question: "Which HTML tag is used to create a table?",
+          options: ["<table>", "<tab>", "<tbl>", "<grid>"],
+          correct: 0
+        },
+        {
+          question: "What does HTTP stand for?",
+          options: ["HyperText Transfer Protocol", "Home Transfer Text Protocol", "HyperText Transport Protocol", "High Transfer Text Protocol"],
+          correct: 0
+        },
+        {
+          question: "Which device is used to input text into a computer?",
+          options: ["Mouse", "Monitor", "Keyboard", "Printer"],
+          correct: 2
+        },
+        {
+          question: "What is the purpose of a web browser?",
+          options: ["Edit websites", "Access and display web pages", "Create websites", "Store websites"],
+          correct: 1
+        },
+        {
+          question: "Which CSS property is used to make text bold?",
+          options: ["font-weight", "text-weight", "font-style", "text-bold"],
+          correct: 0
+        },
+        {
+          question: "What is phishing?",
+          options: ["Catching fish", "A type of cyber attack", "Internet speed test", "Website design"],
+          correct: 1
+        },
+        {
+          question: "Which HTML tag is used to create a paragraph?",
+          options: ["<para>", "<p>", "<paragraph>", "<text>"],
+          correct: 1
+        },
+        {
+          question: "What is the purpose of an IP address?",
+          options: ["Identify devices on a network", "Store website data", "Speed up internet", "Protect from viruses"],
+          correct: 0
+        },
+        {
+          question: "Which file format is commonly used for images on websites?",
+          options: ["DOC", "PDF", "JPG", "EXE"],
+          correct: 2
+        },
+        {
+          question: "What does PDF stand for?",
+          options: ["Portable Document Format", "Personal Document File", "Print Document Format", "Public Document File"],
+          correct: 0
+        },
+        {
+          question: "Which HTML attribute specifies the URL of a hyperlink?",
+          options: ["src", "href", "link", "url"],
+          correct: 1
+        },
+        {
+          question: "What is malware?",
+          options: ["Good software", "Malicious software", "Mail software", "Male software"],
+          correct: 1
+        },
+        {
+          question: "Which CSS property is used to change background color?",
+          options: ["bg-color", "background-color", "color-background", "back-color"],
+          correct: 1
+        },
+        {
+          question: "What is cloud computing?",
+          options: ["Computing in the sky", "Weather prediction", "Internet-based computing services", "Wireless computing"],
+          correct: 2
+        },
+        {
+          question: "Which HTML tag is used for line breaks?",
+          options: ["<break>", "<br>", "<lb>", "<newline>"],
+          correct: 1
+        },
+        {
+          question: "What is the primary purpose of CSS?",
+          options: ["Add functionality", "Style web pages", "Create databases", "Handle user input"],
+          correct: 1
+        },
+        {
+          question: "Which of these is a search engine?",
+          options: ["Facebook", "Google", "YouTube", "Wikipedia"],
+          correct: 1
+        }
+      ]
+    };
+    
+    this.init();
+  }
+  
+  init() {
+    this.loadTestResults();
+    this.updateTestStatuses();
+    this.bindEvents();
+  }
+  
+  bindEvents() {
+    // Test start/retake buttons
+    document.querySelectorAll('.test-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const testCard = e.target.closest('.test-card');
+        const testType = testCard.dataset.test;
+        this.startTest(testType);
+      });
+    });
+    
+    // Results view button
+    document.getElementById('viewResultsBtn').addEventListener('click', () => {
+      this.showResults();
+    });
+    
+    // Back to dashboard button
+    document.getElementById('backToDashboard').addEventListener('click', () => {
+      this.showDashboard();
+    });
+    
+    // Test interface buttons
+    document.getElementById('skipBtn').addEventListener('click', () => {
+      this.skipQuestion();
+    });
+    
+    document.getElementById('nextBtn').addEventListener('click', () => {
+      this.nextQuestion();
+    });
+  }
+  
+  loadTestResults() {
+    const saved = localStorage.getItem('miit_test_results');
+    this.testResults = saved ? JSON.parse(saved) : {};
+  }
+  
+  saveTestResults() {
+    localStorage.setItem('miit_test_results', JSON.stringify(this.testResults));
+  }
+  
+  updateTestStatuses() {
+    const testTypes = ['excel', 'word', 'tally', 'webdev'];
+    
+    testTypes.forEach(testType => {
+      const statusDiv = document.getElementById(`${testType}-status`);
+      const btn = statusDiv.querySelector('.test-btn');
+      
+      if (this.testResults[testType]) {
+        const result = this.testResults[testType];
+        const percentage = Math.round((result.correct / result.total) * 100);
+        
+        btn.innerHTML = `<i class="bi bi-arrow-clockwise"></i> Retake Test`;
+        btn.className = btn.className.replace('btn-lg', 'btn-sm');
+        
+        // Add result summary
+        const resultSummary = document.createElement('div');
+        resultSummary.className = 'mt-2 p-2 bg-light rounded text-center';
+        resultSummary.innerHTML = `
+          <small class="text-muted">Last Score:</small><br>
+          <span class="badge bg-${this.getScoreBadgeColor(percentage)} fs-6">${percentage}%</span>
+          <small class="d-block text-muted mt-1">
+            ${result.correct}/${result.total} correct • ${result.skipped} skipped
+          </small>
+        `;
+        
+        if (statusDiv.querySelector('.result-summary')) {
+          statusDiv.removeChild(statusDiv.querySelector('.result-summary'));
+        }
+        resultSummary.className += ' result-summary';
+        statusDiv.appendChild(resultSummary);
+      }
+    });
+  }
+  
+  getScoreBadgeColor(percentage) {
+    if (percentage >= 90) return 'success';
+    if (percentage >= 70) return 'info';
+    if (percentage >= 50) return 'warning';
+    return 'danger';
+  }
+  
+  startTest(testType) {
+    this.currentTest = testType;
+    this.currentQuestionIndex = 0;
+    this.selectedAnswer = null;
+    
+    // Initialize test results
+    if (!this.testResults[testType]) {
+      this.testResults[testType] = {
+        correct: 0,
+        incorrect: 0,
+        skipped: 0,
+        total: 30,
+        answers: [],
+        startTime: new Date().toISOString(),
+        completed: false
+      };
+    } else {
+      // Reset for retake
+      this.testResults[testType] = {
+        correct: 0,
+        incorrect: 0,
+        skipped: 0,
+        total: 30,
+        answers: [],
+        startTime: new Date().toISOString(),
+        completed: false
+      };
+    }
+    
+    this.showTestInterface();
+    this.loadQuestion();
+    this.startTimer();
+  }
+  
+  showTestInterface() {
+    document.getElementById('testDashboard').classList.add('d-none');
+    document.getElementById('resultsView').classList.add('d-none');
+    document.getElementById('testInterface').classList.remove('d-none');
+    
+    // Update test title
+    const titles = {
+      excel: 'MS Excel Skills Test',
+      word: 'MS Word Proficiency Test',
+      tally: 'Tally ERP Knowledge Test',
+      webdev: 'Basic Computer & Web Development Test'
+    };
+    
+    document.getElementById('testTitle').textContent = titles[this.currentTest];
+  }
+  
+  showDashboard() {
+    document.getElementById('testInterface').classList.add('d-none');
+    document.getElementById('resultsView').classList.add('d-none');
+    document.getElementById('testDashboard').classList.remove('d-none');
+    
+    if (this.timer) {
+      clearInterval(this.timer);
+      this.timer = null;
+    }
+    
+    this.updateTestStatuses();
+  }
+  
+  loadQuestion() {
+    const questions = this.questions[this.currentTest];
+    const question = questions[this.currentQuestionIndex];
+    
+    // Update progress
+    document.getElementById('testProgress').textContent = 
+      `Question ${this.currentQuestionIndex + 1} of ${questions.length}`;
+    
+    // Update question text
+    document.getElementById('questionText').textContent = question.question;
+    
+    // Create options
+    const optionsContainer = document.getElementById('optionsContainer');
+    optionsContainer.innerHTML = '';
+    
+    question.options.forEach((option, index) => {
+      const optionDiv = document.createElement('div');
+      optionDiv.className = 'col-md-6 mb-3';
+      optionDiv.innerHTML = `
+        <div class="card option-card" data-option="${index}">
+          <div class="card-body text-center py-3">
+            <div class="option-letter fw-bold text-primary mb-2">${String.fromCharCode(65 + index)}</div>
+            <div class="option-text">${option}</div>
+          </div>
+        </div>
+      `;
+      optionsContainer.appendChild(optionDiv);
+    });
+    
+    // Bind option click events
+    document.querySelectorAll('.option-card').forEach(card => {
+      card.addEventListener('click', () => {
+        this.selectOption(parseInt(card.dataset.option));
+      });
+    });
+    
+    // Reset selected answer and button states
+    this.selectedAnswer = null;
+    document.getElementById('nextBtn').disabled = true;
+    
+    // Reset timer
+    this.timeRemaining = 45;
+    this.updateTimerDisplay();
+  }
+  
+  selectOption(optionIndex) {
+    // Remove previous selection
+    document.querySelectorAll('.option-card').forEach(card => {
+      card.classList.remove('selected');
+    });
+    
+    // Add selection to clicked option
+    document.querySelector(`[data-option="${optionIndex}"]`).classList.add('selected');
+    
+    this.selectedAnswer = optionIndex;
+    document.getElementById('nextBtn').disabled = false;
+  }
+  
+  startTimer() {
+    this.timeRemaining = 45;
+    this.updateTimerDisplay();
+    
+    this.timer = setInterval(() => {
+      this.timeRemaining--;
+      this.updateTimerDisplay();
+      
+      if (this.timeRemaining <= 10) {
+        document.getElementById('timeRemaining').classList.add('timer-warning');
+      }
+      
+      if (this.timeRemaining <= 0) {
+        this.skipQuestion();
+      }
+    }, 1000);
+  }
+  
+  updateTimerDisplay() {
+    const minutes = Math.floor(this.timeRemaining / 60);
+    const seconds = this.timeRemaining % 60;
+    document.getElementById('timeRemaining').textContent = 
+      `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+  }
+  
+  skipQuestion() {
+    this.recordAnswer('skipped');
+    this.proceedToNext();
+  }
+  
+  nextQuestion() {
+    if (this.selectedAnswer !== null) {
+      this.recordAnswer(this.selectedAnswer);
+    } else {
+      this.recordAnswer('skipped');
+    }
+    this.proceedToNext();
+  }
+  
+  recordAnswer(answer) {
+    const questions = this.questions[this.currentTest];
+    const question = questions[this.currentQuestionIndex];
+    const result = this.testResults[this.currentTest];
+    
+    const answerRecord = {
+      questionIndex: this.currentQuestionIndex,
+      question: question.question,
+      options: question.options,
+      correctAnswer: question.correct,
+      userAnswer: answer,
+      isCorrect: answer === question.correct,
+      timeSpent: 45 - this.timeRemaining
+    };
+    
+    result.answers.push(answerRecord);
+    
+    if (answer === 'skipped') {
+      result.skipped++;
+    } else if (answer === question.correct) {
+      result.correct++;
+    } else {
+      result.incorrect++;
+    }
+  }
+  
+  proceedToNext() {
+    clearInterval(this.timer);
+    document.getElementById('timeRemaining').classList.remove('timer-warning');
+    
+    this.currentQuestionIndex++;
+    
+    if (this.currentQuestionIndex >= this.questions[this.currentTest].length) {
+      this.completeTest();
+    } else {
+      this.loadQuestion();
+      this.startTimer();
+    }
+  }
+  
+  completeTest() {
+    this.testResults[this.currentTest].completed = true;
+    this.testResults[this.currentTest].endTime = new Date().toISOString();
+    this.saveTestResults();
+    
+    this.showTestCompletion();
+  }
+  
+  showTestCompletion() {
+    const result = this.testResults[this.currentTest];
+    const percentage = Math.round((result.correct / result.total) * 100);
+    
+    const completionHtml = `
+      <div class="text-center py-5">
+        <div class="mb-4">
+          <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
+        </div>
+        <h2 class="text-success mb-3">Test Completed!</h2>
+        <div class="row justify-content-center">
+          <div class="col-md-6">
+            <div class="card border-0 shadow">
+              <div class="card-body">
+                <h3 class="text-primary mb-3">${percentage}%</h3>
+                <div class="row text-center">
+                  <div class="col-4">
+                    <div class="text-success fw-bold fs-4">${result.correct}</div>
+                    <small class="text-muted">Correct</small>
+                  </div>
+                  <div class="col-4">
+                    <div class="text-danger fw-bold fs-4">${result.incorrect}</div>
+                    <small class="text-muted">Incorrect</small>
+                  </div>
+                  <div class="col-4">
+                    <div class="text-warning fw-bold fs-4">${result.skipped}</div>
+                    <small class="text-muted">Skipped</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="mt-4">
+          <button class="btn btn-primary btn-lg me-3" onclick="testSystem.showResults()">
+            <i class="bi bi-bar-chart"></i> View Detailed Results
+          </button>
+          <button class="btn btn-outline-primary btn-lg" onclick="testSystem.showDashboard()">
+            <i class="bi bi-house"></i> Back to Dashboard
+          </button>
+        </div>
+      </div>
+    `;
+    
+    document.getElementById('testInterface').innerHTML = `
+      <div class="row">
+        <div class="col-12">
+          <div class="card shadow border-0">
+            <div class="card-body">
+              ${completionHtml}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+  
+  showResults() {
+    document.getElementById('testDashboard').classList.add('d-none');
+    document.getElementById('testInterface').classList.add('d-none');
+    document.getElementById('resultsView').classList.remove('d-none');
+    
+    this.renderResults();
+  }
+  
+  renderResults() {
+    const container = document.getElementById('resultsContainer');
+    
+    if (Object.keys(this.testResults).length === 0) {
+      container.innerHTML = `
+        <div class="text-center py-5">
+          <i class="bi bi-clipboard-x text-muted" style="font-size: 4rem;"></i>
+          <h3 class="text-muted mt-3">No Test Results Yet</h3>
+          <p class="text-muted">Take a test to see your results here.</p>
+        </div>
+      `;
+      return;
+    }
+    
+    let totalTests = 0;
+    let totalCorrect = 0;
+    let totalQuestions = 0;
+    
+    // Calculate overall statistics
+    Object.values(this.testResults).forEach(result => {
+      if (result.completed) {
+        totalTests++;
+        totalCorrect += result.correct;
+        totalQuestions += result.total;
+      }
+    });
+    
+    const overallPercentage = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
+    
+    // Summary section
+    const summaryHtml = `
+      <div class="results-summary mb-4">
+        <h2 class="mb-3"><i class="bi bi-trophy"></i> Overall Performance</h2>
+        <div class="row text-center">
+          <div class="col-md-3">
+            <div class="display-4 fw-bold">${overallPercentage}%</div>
+            <div>Overall Score</div>
+          </div>
+          <div class="col-md-3">
+            <div class="display-4 fw-bold">${totalTests}</div>
+            <div>Tests Completed</div>
+          </div>
+          <div class="col-md-3">
+            <div class="display-4 fw-bold">${totalCorrect}</div>
+            <div>Total Correct</div>
+          </div>
+          <div class="col-md-3">
+            <div class="display-4 fw-bold">${totalQuestions}</div>
+            <div>Total Questions</div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Individual test results
+    const testCards = ['excel', 'word', 'tally', 'webdev'].map(testType => {
+      const testNames = {
+        excel: 'MS Excel',
+        word: 'MS Word',
+        tally: 'Tally ERP',
+        webdev: 'Web Development'
+      };
+      
+      const result = this.testResults[testType];
+      
+      if (!result || !result.completed) {
+        return `
+          <div class="col-md-6 mb-4">
+            <div class="card h-100 border-secondary">
+              <div class="card-header bg-light">
+                <h5 class="mb-0">${testNames[testType]} Test</h5>
+              </div>
+              <div class="card-body text-center">
+                <i class="bi bi-dash-circle text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3">Not attempted yet</p>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+      
+      const percentage = Math.round((result.correct / result.total) * 100);
+      const scoreClass = this.getScoreClass(percentage);
+      
+      return `
+        <div class="col-md-6 mb-4">
+          <div class="card h-100 score-card ${scoreClass}">
+            <div class="card-header">
+              <h5 class="mb-0">${testNames[testType]} Test</h5>
+              <small class="text-muted">Completed: ${new Date(result.endTime).toLocaleDateString()}</small>
+            </div>
+            <div class="card-body">
+              <div class="row text-center mb-3">
+                <div class="col-12">
+                  <div class="display-5 fw-bold text-primary">${percentage}%</div>
+                </div>
+              </div>
+              <div class="row text-center">
+                <div class="col-4">
+                  <div class="text-success fw-bold">${result.correct}</div>
+                  <small class="text-muted">Correct</small>
+                </div>
+                <div class="col-4">
+                  <div class="text-danger fw-bold">${result.incorrect}</div>
+                  <small class="text-muted">Wrong</small>
+                </div>
+                <div class="col-4">
+                  <div class="text-warning fw-bold">${result.skipped}</div>
+                  <small class="text-muted">Skipped</small>
+                </div>
+              </div>
+              <div class="mt-3">
+                <button class="btn btn-outline-primary btn-sm w-100" onclick="testSystem.showDetailedResults('${testType}')">
+                  <i class="bi bi-list-ul"></i> View Detailed Analysis
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }).join('');
+    
+    container.innerHTML = summaryHtml + '<div class="row">' + testCards + '</div>';
+  }
+  
+  getScoreClass(percentage) {
+    if (percentage >= 90) return 'score-excellent';
+    if (percentage >= 70) return 'score-good';
+    if (percentage >= 50) return 'score-average';
+    return 'score-poor';
+  }
+  
+  showDetailedResults(testType) {
+    const result = this.testResults[testType];
+    if (!result || !result.completed) return;
+    
+    const testNames = {
+      excel: 'MS Excel',
+      word: 'MS Word', 
+      tally: 'Tally ERP',
+      webdev: 'Web Development'
+    };
+    
+    const modalHtml = `
+      <div class="modal fade" id="detailedResultsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">${testNames[testType]} - Detailed Results</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="max-height: 400px; overflow-y: auto;">
+              ${result.answers.map((answer, index) => `
+                <div class="card mb-3 ${answer.isCorrect ? 'border-success' : answer.userAnswer === 'skipped' ? 'border-warning' : 'border-danger'}">
+                  <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <small class="text-muted">Question ${index + 1}</small>
+                      <span class="badge bg-${answer.isCorrect ? 'success' : answer.userAnswer === 'skipped' ? 'warning' : 'danger'}">
+                        ${answer.isCorrect ? 'Correct' : answer.userAnswer === 'skipped' ? 'Skipped' : 'Wrong'}
+                      </span>
+                    </div>
+                    <p class="fw-bold">${answer.question}</p>
+                    ${answer.options.map((option, optIndex) => `
+                      <div class="mb-1 ${optIndex === answer.correctAnswer ? 'text-success fw-bold' : optIndex === answer.userAnswer ? 'text-danger' : ''}">
+                        ${String.fromCharCode(65 + optIndex)}. ${option}
+                        ${optIndex === answer.correctAnswer ? ' ✓' : ''}
+                        ${optIndex === answer.userAnswer && !answer.isCorrect ? ' ✗' : ''}
+                      </div>
+                    `).join('')}
+                    ${answer.userAnswer === 'skipped' ? '<div class="text-warning"><em>Question was skipped</em></div>' : ''}
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    // Remove existing modal if any
+    const existingModal = document.getElementById('detailedResultsModal');
+    if (existingModal) {
+      existingModal.remove();
+    }
+    
+    // Add modal to body
+    document.body.insertAdjacentHTML('beforeend', modalHtml);
+    
+    // Show modal
+    const modal = new bootstrap.Modal(document.getElementById('detailedResultsModal'));
+    modal.show();
+    
+    // Clean up modal after hide
+    document.getElementById('detailedResultsModal').addEventListener('hidden.bs.modal', function() {
+      this.remove();
+    });
+  }
+}
+
+// Initialize the test system
+let testSystem;
+document.addEventListener('DOMContentLoaded', function() {
+  testSystem = new MIITTestSystem();
+});
+</script>
+
+<%- include('./partials/footer') %>
