@@ -931,6 +931,8 @@ app.post('/super-admin/certificates/issue', ensureSuperAdmin, async (req, res) =
   try {
     const { studentId, certificateType, grade, validUntil, notes } = req.body;
 
+    console.log('📜 Certificate issue request for studentId:', studentId);
+
     if (!studentId) {
       return res.status(400).json({ ok: false, error: 'Student ID is required' });
     }
@@ -940,12 +942,24 @@ app.post('/super-admin/certificates/issue', ensureSuperAdmin, async (req, res) =
       return res.status(400).json({ ok: false, error: 'Student not found' });
     }
 
+    console.log('✅ Student found:', {
+      studentId: student.studentId,
+      name: student.student.name,
+      studyMode: student.studyMode,
+      centerId: student.center?._id
+    });
+
+    // Check if certificate already exists
     const existingCert = await Certificate.findOne({ 'student._id': student._id });
     if (existingCert) {
-      return res.status(400).json({ ok: false, error: 'Certificate already issued for this student' });
+      return res.status(400).json({ 
+        ok: false, 
+        error: 'Certificate already issued for this student' 
+      });
     }
 
-    const certificate = new Certificate({
+    // ✅ FIXED: Handle center data based on study mode
+    const certificateData = {
       student: {
         _id: student._id,
         studentId: student.studentId,
@@ -958,11 +972,6 @@ app.post('/super-admin/certificates/issue', ensureSuperAdmin, async (req, res) =
         type: student.course.type,
         duration: student.course.duration
       },
-      center: {
-        _id: student.center._id,
-        inst: student.center.inst,
-        state: student.center.state
-      },
       certificateType: certificateType || 'completion',
       grade: grade || 'Pass',
       validUntil: validUntil ? new Date(validUntil) : null,
@@ -970,9 +979,31 @@ app.post('/super-admin/certificates/issue', ensureSuperAdmin, async (req, res) =
         issuerName: 'Super Admin',
         notes: notes || ''
       }
-    });
+    };
 
+    // ✅ FIXED: Set center based on study mode
+    if (student.studyMode === 'online' || !student.center._id) {
+      // For online students - set center with defaults
+      certificateData.center = {
+        _id: null,
+        inst: 'Online',
+        state: 'N/A'
+      };
+      console.log('📝 Creating certificate for ONLINE student');
+    } else {
+      // For offline students - use actual center data
+      certificateData.center = {
+        _id: student.center._id,
+        inst: student.center.inst || 'Unknown Center',
+        state: student.center.state || 'N/A'
+      };
+      console.log('📝 Creating certificate for OFFLINE student');
+    }
+
+    const certificate = new Certificate(certificateData);
     await certificate.save();
+
+    console.log('✅ Certificate created successfully:', certificate.certificateId);
 
     res.json({
       ok: true,
@@ -982,10 +1013,24 @@ app.post('/super-admin/certificates/issue', ensureSuperAdmin, async (req, res) =
     });
 
   } catch (error) {
-    console.error('Issue certificate error:', error);
-    res.status(500).json({ ok: false, error: 'Failed to issue certificate' });
+    console.error('❌ Issue certificate error:', error);
+    
+    // Better error messages
+    if (error.name === 'ValidationError') {
+      const errors = Object.values(error.errors).map(e => e.message);
+      return res.status(400).json({ 
+        ok: false, 
+        error: `Validation failed: ${errors.join(', ')}` 
+      });
+    }
+    
+    res.status(500).json({ 
+      ok: false, 
+      error: 'Failed to issue certificate: ' + error.message 
+    });
   }
 });
+
 
 app.post('/super-admin/certificates/:id/revoke', ensureSuperAdmin, async (req, res) => {
   try {

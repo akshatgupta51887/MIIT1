@@ -54,12 +54,214 @@
             from { transform: translate(-50%, -50%) rotate(0deg); }
             to { transform: translate(-50%, -50%) rotate(360deg); }
         }
+        
+        /* PDF Modal Styles */
+        .pdf-modal {
+            display: none;
+            position: fixed;
+            z-index: 10000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.85);
+            animation: fadeIn 0.3s ease-in;
+        }
+        
+        .pdf-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+        
+        .pdf-modal-content {
+            background-color: #fff;
+            width: 100%;
+            max-width: 1200px;
+            height: 90vh;
+            max-height: 800px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            display: flex;
+            flex-direction: column;
+            animation: slideUp 0.3s ease-out;
+        }
+        
+        .pdf-modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        
+        .pdf-modal-title {
+            margin: 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+        
+        .pdf-close-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            font-size: 1.3rem;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .pdf-close-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: rotate(90deg);
+        }
+        
+        .pdf-modal-body {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+            background: #f5f5f5;
+        }
+        
+        .pdf-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .pdf-loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .pdf-loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spinPdf 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes spinPdf {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Welcome Button Styles - Mobile Responsive */
+        .welcome-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+        }
+        
+        .welcome-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .welcome-btn i {
+            margin-right: 6px;
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .pdf-modal-content {
+                width: 100%;
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+            }
+            
+            .pdf-modal.active {
+                padding: 0;
+            }
+            
+            .pdf-modal-title {
+                font-size: 0.95rem;
+            }
+            
+            .pdf-close-btn {
+                width: 32px;
+                height: 32px;
+                font-size: 1.1rem;
+            }
+            
+            .welcome-btn {
+                padding: 6px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .welcome-btn i {
+                margin-right: 4px;
+            }
+            
+            .top-section-flex {
+                flex-direction: column;
+                gap: 8px;
+                align-items: flex-start !important;
+            }
+            
+            .phone-section {
+                font-size: 0.85rem;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .welcome-btn {
+                padding: 5px 10px;
+                font-size: 0.75rem;
+            }
+            
+            .phone-section {
+                font-size: 0.8rem;
+            }
+            
+            .phone-section small {
+                display: block;
+                font-size: 0.7rem;
+            }
+        }
     </style>
     <link href="/css/nxr.min7839.css" rel="stylesheet" />
 </head>
 
 <%
-// Fallback if auth is undefined (should not happen with proper middleware)
+// Fallback if auth is undefined
 if (typeof auth === 'undefined') {
   auth = {
     isStudentLoggedIn: false,
@@ -102,10 +304,16 @@ if (typeof auth === 'undefined') {
     <!-- Top Section -->
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 bg-secondary text-end text-bold text-white py-1">
-                <span class="px-3 m-2"><i class="fa fa-phone"></i> : <a class="text-decoration-none text-white"
-                        href="tel:+918897738181">8897738181</a> <small class="fw-bold text-warning">(11:00am to 6:00pm
-                        IST)</small></span>
+            <div class="col-12 bg-secondary text-white py-2">
+                <div class="d-flex justify-content-between align-items-center px-2 px-md-3 top-section-flex">
+                
+                    <!-- Phone Number -->
+                    <span class="text-bold phone-section">
+                        <i class="fa fa-phone"></i> :
+                        <a class="text-decoration-none text-white" href="tel:+918897738181">8897738181</a> 
+                        <small class="fw-bold text-warning">(11:00am to 6:00pm IST)</small>
+                    </span>
+                </div>
             </div>
         </div>
     </div>
@@ -128,8 +336,13 @@ if (typeof auth === 'undefined') {
                 
                 <!-- Dynamic Login/Profile Section -->
                 <div class="col-lg-3 text-end align-self-center d-none d-lg-block">
+                    <!-- Welcome MIIT Button - Desktop (Above Login) -->
+                    <button class="welcome-btn w-100 mb-2" onclick="openPDF('/pdf/welcomeMIIT.pdf', 'Welcome to MIIT')">
+                        <i class="fa fa-file-pdf-o"></i> Welcome MIIT
+                    </button>
+                    
                     <% if (auth.isStudentLoggedIn) { %>
-                        <!-- Student is logged in - Show only student profile -->
+                        <!-- Student Profile -->
                         <div class="dropdown">
                             <button class="btn btn-success rounded-0 dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
                                 <i class="nxr-user"></i> <span class="idvd">|</span> <%= auth.student.name %>
@@ -141,7 +354,8 @@ if (typeof auth === 'undefined') {
                             </ul>
                         </div>
                     <% } else if (auth.isCenter) { %>
-                        <!-- Center is logged in - Show only center profile -->
+                        <!-- Center Profile -->
+                        <div class="dropdown">
                             <button class="btn btn-info rounded-0 dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
                                 <i class="nxr-building"></i> <span class="idvd">|</span> <%= auth.center.name %>
                             </button>
@@ -152,7 +366,7 @@ if (typeof auth === 'undefined') {
                             </ul>
                         </div>
                     <% } else { %>
-                        <!-- Nobody is logged in - Show both login options -->
+                        <!-- Login Options -->
                         <a href="/center-login" class="btn btn-warning rounded-0 mb-1 w-100"><i
                                 class="fa fa-fingerprint"></i> <span class="idvd">|</span> <b>CENTER LOGIN</b></a><br>
                         <a href="/student-login" class="btn btn-primary rounded-0 w-100"><i
@@ -183,39 +397,39 @@ if (typeof auth === 'undefined') {
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link " aria-current="page" href="/register-with-miit"><span>CENTER
-                                REGISTRATION</span></a>
+                        <a class="nav-link" aria-current="page" href="/register-with-miit"><span>CENTER REGISTRATION</span></a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link " aria-current="page" href="/miit-center-list"><span>OUR
-                                CENTERS</span></a>
+                        <a class="nav-link" aria-current="page" href="/miit-center-list"><span>OUR CENTERS</span></a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link " aria-current="page" href="/miit-course-list"><span>COURSES</span></a>
+                        <a class="nav-link" aria-current="page" href="/miit-course-list"><span>COURSES</span></a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link " aria-current="page" href="/miit-gallery"><span>GALLERY</span></a>
+                        <a class="nav-link" aria-current="page" href="/miit-gallery"><span>GALLERY</span></a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link " aria-current="page" href="/top-miit-centers"><span>TOP
-                                CENTERS</span></a>
+                        <a class="nav-link" aria-current="page" href="/top-miit-centers"><span>TOP CENTERS</span></a>
+                    </li>
+
+                    <!-- NEW: Software & Services Menu Item -->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" onclick="openPDF('/pdf/projects.pdf', 'Software & Services'); return false;">
+                            <span>SOFTWARE & SERVICES</span>
+                        </a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link " aria-current="page" href="/student-admission"><span>Student Admission
+                        <a class="nav-link" aria-current="page" href="/student-admission"><span>Student Admission
                                 <small class="badge rounded-pill text-bg-warning">NEW</small></span></a>
                     </li>
 
-                    <!-- <li class="nav-item">
-                        <a class="nav-link " aria-current="page" href="miit-careers.html"><span>Careers</span></a>
-                    </li> -->
-
                     <li class="nav-item dropdown">
-                        <a class="nav-link  dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
                             aria-expanded="false">
                             <span class="px-2">About MIIT</span>
                         </a>
@@ -228,17 +442,22 @@ if (typeof auth === 'undefined') {
                         </ul>
                     </li>
 
-                    <!-- Mobile Login Section - Also cleaned up -->
+                    <!-- Mobile: Welcome Button -->
+                    <li class="nav-item d-block d-lg-none mt-2">
+                        <button class="btn btn-outline-light rounded-0 w-100" onclick="openPDF('/pdf/welcomeMIIT.pdf', 'Welcome to MIIT')">
+                            <i class="fa fa-file-pdf-o"></i> <span class="idvd">|</span> <b>WELCOME MIIT</b>
+                        </button>
+                    </li>
+
+                    <!-- Mobile Login Section -->
                     <% if (auth.isStudentLoggedIn) { %>
-                        <!-- Student Mobile Menu -->
-                        <li class="nav-item d-block d-lg-none mt-1">
+                        <li class="nav-item d-block d-lg-none mt-2">
                             <a href="/student-dashboard" class="btn btn-success rounded-0 w-100"><i class="nxr-user"></i> <span class="idvd">|</span> <b><%= auth.student.name %></b></a>
                         </li>
                         <li class="nav-item d-block d-lg-none mt-2">
                             <a href="/student-logout" class="btn btn-danger rounded-0 w-100"><i class="nxr-logout"></i> <span class="idvd">|</span> <b>LOGOUT</b></a>
                         </li>
                     <% } else if (auth.isCenter) { %>
-                        <!-- Center Mobile Menu -->
                         <li class="nav-item d-block d-lg-none mt-2">
                             <a href="/center-dashboard" class="btn btn-info rounded-0 w-100"><i class="nxr-building"></i> <span class="idvd">|</span> <b><%= auth.center.name %></b></a>
                         </li>
@@ -246,8 +465,7 @@ if (typeof auth === 'undefined') {
                             <a href="/center-logout" class="btn btn-danger rounded-0 w-100"><i class="nxr-logout"></i> <span class="idvd">|</span> <b>LOGOUT</b></a>
                         </li>
                     <% } else { %>
-                        <!-- Mobile Login Options -->
-                        <li class="nav-item d-block d-lg-none mt-1">
+                        <li class="nav-item d-block d-lg-none mt-2">
                             <a href="/center-login" class="btn btn-warning rounded-0 w-100"><i class="nxr-fingerprint"></i> <span class="idvd">|</span> <b>CENTER LOGIN</b></a>
                         </li>
                         <li class="nav-item d-block d-lg-none mt-2">
@@ -258,3 +476,83 @@ if (typeof auth === 'undefined') {
             </div>
         </div>
     </nav>
+
+    <!-- Universal PDF Modal -->
+    <div id="pdfModal" class="pdf-modal">
+        <div class="pdf-modal-content">
+            <div class="pdf-modal-header">
+                <h5 class="pdf-modal-title" id="pdfModalTitle">Document Viewer</h5>
+                <button class="pdf-close-btn" onclick="closePDF()" aria-label="Close">
+                    <i class="fa fa-times"></i>
+                </button>
+            </div>
+            <div class="pdf-modal-body">
+                <div class="pdf-loading" id="pdfLoading">
+                    <div class="pdf-loading-spinner"></div>
+                    <p class="text-muted">Loading PDF...</p>
+                </div>
+                <iframe id="pdfIframe" class="pdf-iframe" style="display: none;"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- PDF Viewer JavaScript -->
+    <script>
+        // Universal PDF viewer function
+        function openPDF(pdfUrl, title) {
+            const modal = document.getElementById('pdfModal');
+            const iframe = document.getElementById('pdfIframe');
+            const loading = document.getElementById('pdfLoading');
+            const modalTitle = document.getElementById('pdfModalTitle');
+            
+            // Set title
+            modalTitle.textContent = title || 'Document Viewer';
+            
+            // Show modal
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Show loading, hide iframe
+            loading.style.display = 'block';
+            iframe.style.display = 'none';
+            
+            // Load PDF
+            iframe.src = pdfUrl;
+            
+            // Hide loading when PDF loads
+            iframe.onload = function() {
+                setTimeout(() => {
+                    loading.style.display = 'none';
+                    iframe.style.display = 'block';
+                }, 500);
+            };
+        }
+        
+        // Close PDF modal
+        function closePDF() {
+            const modal = document.getElementById('pdfModal');
+            const iframe = document.getElementById('pdfIframe');
+            
+            modal.classList.remove('active');
+            document.body.style.overflow = 'auto';
+            
+            // Clear iframe after animation
+            setTimeout(() => {
+                iframe.src = '';
+            }, 300);
+        }
+        
+        // Close on Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closePDF();
+            }
+        });
+        
+        // Close on backdrop click
+        document.getElementById('pdfModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closePDF();
+            }
+        });
+    </script>
