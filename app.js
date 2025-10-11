@@ -515,7 +515,7 @@ function fileFilter (req, file, cb) {
   const allowedImage = /^image\//;
   const allowedPdf = file.mimetype === 'application/pdf';
   if (allowedImage.test(file.mimetype) || allowedPdf) {
-    cb(null, true);
+    cb(null, true);``
   } else {
     cb(null, false);
   }
